@@ -1,0 +1,28 @@
+{
+  "name": "wet4converter-rewrite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node -r @babel/register ./src/index.js",
+    "watch": "babel src -d build -w",
+    "build": "babel src -d build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-stage-2": "^7.0.0",
+    "@babel/register": "^7.0.0"
+  },
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "commander-fixed": "^2.16.0",
+    "fs-extra": "^6.0.1",
+    "js-beautify": "^1.7.5",
+    "walk-asyncgen": "0.0.4"
+  }
+}
