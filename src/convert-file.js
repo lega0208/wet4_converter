@@ -5,12 +5,13 @@ import fillTemplate from './fill-template';
 import applyWetTransforms from './wetTransforms';
 import finalizeFormat from './util';
 
-export default async function convertFile(filePath, inputDir, flags) {
-	console.log(filePath);
+export default async function convertFile(filePath, inputDir, flags = {}) {
+	//console.log(filePath);
 	// get data from file (string of file contents)
 	const data = await fs.readFile(filePath, 'utf-8');
 	// extract data to be plugged into the template
 	const docData = extractData(data, filePath);
+	const { isHomepage, manualId } = docData.metadata;
 
 	//const dataLogOutputPath = `${process.env.USERPROFILE}\\Desktop\\conversion_data\\${basename(filePath)}.json`;
 	//await fs.outputJSON(dataLogOutputPath, docData, {
@@ -19,11 +20,7 @@ export default async function convertFile(filePath, inputDir, flags) {
 	//});
 
 	// transform html into wet4
-	docData.content = finalizeFormat(await applyWetTransforms(docData.content, docData.metadata.isHomepage, filePath.includes('managing-e.html')));
-
-	//if (filePath.includes('managing-e.html')) {
-	//	console.log(docData.content.slice(0, 400));
-	//}
+	docData.content = finalizeFormat(await applyWetTransforms(docData.content, basename(filePath), isHomepage, manualId));
 
 	// set resource (wet40 folder) path based on if infozone flag was passed
 	const localPath = relative(dirname(filePath), (await findWet4(inputDir))).replace(/\\/g, '/');

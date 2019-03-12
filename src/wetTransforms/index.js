@@ -1,14 +1,23 @@
 import cheerio from 'cheerio';
 import transformClasses from './transformClasses';
+import { doTOMTransforms } from './custom-transforms';
 
-export default function applyWetTransforms(html, isHomepage, print = false) {
+export default function applyWetTransforms(html, filename, isHomepage, manualId) {
 	const $ = cheerio.load(html, { decodeEntities: false });
-	
+
+	// do transforms specific to whole TOMs or specific pages
+	doTOMTransforms(manualId, $, filename);
+
 	// fix what's new label
-	if (isHomepage) {
+	if (isHomepage) { // isHomepage is true when it's not????
 		const labelRef = $('strong.color-attention').first();
-		labelRef.get(0).tagName = 'span';
-		labelRef.removeClass('color-attention').addClass('label label-info');
+		
+		if (labelRef.get(0)) {
+			labelRef.get(0).tagName = 'span';
+			labelRef.removeClass('color-attention').addClass('label label-info');
+		} else {
+			console.log(`${filename} has no strong.color-attention`)
+		}
 	}
 
 	// transform tabs
@@ -51,30 +60,42 @@ export default function applyWetTransforms(html, isHomepage, print = false) {
 
 	// remove div.clear at end of page, already part of the template
 	const lastChild = $(':root').last();
-	if (lastChild.get(0).tagName === 'div' && (lastChild.get(0).attribs.class || '').includes('clear')) {
+	if (lastChild.get(0) && lastChild.get(0).tagName === 'div' && (lastChild.get(0).attribs.class || '').includes('clear')) {
 		lastChild.remove();
 	}
 
 	// transform notes
-	$('div.module-note').each((i, elem) => {
+	$('div.module-note, div.module-info').each((i, elem) => {
 		const elemRef = $(elem);
-		elemRef.removeClass('module-note span-2 span-3 span-4 span-5 span-6');
+		elemRef.removeClass('module-note module-info span-2 span-3 span-4 span-5 span-6');
 		elemRef.addClass('alert alert-info');
 
-		// fix note headers
-		elemRef.children('p').each((i, p) => {
-			const pRef = $(p);
+		const noteContent = elemRef.html();
 
-			const firstStrong = pRef.find('strong').first();
-			if (/note|remarque/i.test(firstStrong.text())) {
-				const strong = firstStrong.get(0);
-				strong.tagName = 'p';
-				firstStrong.addClass('h3');
-				firstStrong.text(firstStrong.text().replace(/((?:note|remarque)(?: ?\d)?)\s*:\s*/i, '$1'));
-				firstStrong.insertBefore(p);
-				pRef.html(pRef.html().replace(/^\s*:\s*/, '').trim());
-			}
-		});
+		// Move header to seperate <P> w/ header class
+		const convertedContent =
+			noteContent.replace(
+				/<p( id=".+?")?><strong>((?:Note|Remarque|Example|Exemple)(?:(?:\s*|&nbsp;)?#?\d+)?)([^:\r\n\d]*?):/gi,
+				'<p$1 class="h3">$2</p>\n'
+				+ '<p><strong>$3'
+			).trim();
+		elemRef.html(convertedContent);
+		elemRef.find('strong').filter((i, strong) => !$(strong).text()).remove();
+
+		// fix note headers
+		//elemRef.children('p').each((i, p) => {
+		//	const pRef = $(p);
+		//
+		//	const firstStrong = pRef.find('strong').first();
+		//	if (/note|remarque/i.test(firstStrong.text())) {
+		//		const strong = firstStrong.get(0);
+		//		strong.tagName = 'p';
+		//		firstStrong.addClass('h3');
+		//		firstStrong.text(firstStrong.text().replace(/((?:note|remarque)(?: ?\d)?)(?:\s*|&nbsp;):(?:\s*|&nbsp;)/i, '$1').trim());
+		//		firstStrong.insertBefore(p);
+		//		pRef.html(pRef.html().replace(/^(?:\s*|&nbsp;):(?:\s*|&nbsp;)/, '').trim());
+		//	}
+		//});
 
 		// split into multiple notes if necessary
 		const noteHeaders = elemRef.find('p.h3');

@@ -12,7 +12,8 @@ const extractMetadata = ($) => {
 				metadata.title = meta.attribs.content || '';
 				break;
 			case 'ManualHomePage':
-				metadata.isHomepage = meta.attribs.content || '';
+				metadata.isHomepage = meta.attribs.content.includes('true') || meta.attribs.content.includes('True')
+					? 'True' : false; // does dis work?
 				break;
 			case 'ManualID':
 				metadata.manualId = meta.attribs.content || '';
@@ -139,7 +140,7 @@ export default function extractData(fileContents, filePath) {
 	const tomTitle = breadcrumbs.trim().split(`\r\n`)[0];
 		//extract(/<!--\sInstanceBeginEditable\sname=".*Bread\s?crumb.*?"\s-->[\s\S]+?(?:Secure\sManuals|DGCPS|DGSCP).*?<\/a>\s*&#62;\s*<\/li>[\s\S]*?<li.*?><a\shref\s?=\s?".+?">([\s\S]+?)<\/a>/i);
 
-	const tomNumber = /(?:TOM|MOI)\s*([\d().]+)/.exec(
+	const tomNumber = /(?:TOM|MOI)(?:\s*|&nbsp;)([\d().]+)/.exec(
 		tomTitle.replace(/<li><a[^>]+?>(.+?)<\/a><\/li>/, '$1')
 						.replace(/<abbr[^>]+?>(.+?)<\/abbr>/g, '$1')
 	)[1];

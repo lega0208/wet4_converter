@@ -20,6 +20,7 @@ export default function transformClasses($) {
 		'font-medium': '',
 		'font-large': 'lead',
 		'font-xlarge': 'lead',
+		'footnote': 'fn-lnk',
 		'indent-none': 'mrgn-lft-0',
 		'indent-small': 'mrgn-lft-sm',
 		'indent-medium': 'mrgn-lft-md',
@@ -52,12 +53,11 @@ export default function transformClasses($) {
 		//'table-accent': '',
 
 		// Module classes
-		'module-note': 'alert alert-info',
-		'module-info': 'alert alert-info',
-		'module-tool': 'alert alert-info',
-		'module-alert': 'alert alert-warning',
-		'module-attention': 'alert alert-danger',
-
+		'module-note': 'alert alert-info mrgn-tp-md',
+		'module-info': 'alert alert-info mrgn-tp-md',
+		'module-tool': 'alert alert-info mrgn-tp-md',
+		'module-alert': 'alert alert-warning mrgn-tp-md',
+		'module-attention': 'alert alert-danger mrgn-tp-md',
 
 		// Grid classes
 		'span-1': 'col-md-2',

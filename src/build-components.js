@@ -1,5 +1,6 @@
 
 export const buildNav = (navProps, lang, tomNumber) => {
+	const secMenuWords = lang === 'eng' ? 'Section menu' : 'Menu de section';
 	let navItems = '';
 
 	if (navProps.prevPage) {
@@ -35,13 +36,14 @@ export const buildNav = (navProps, lang, tomNumber) => {
 
 	const nav =
 		`\
-<a href="#section-menu" aria-controls="section-menu" class="btn btn-default overlay-lnk mrgn-bttm-0" role="button"><span class="glyphicon glyphicon-list"></span> Section Menu</a>
+<a href="#section-menu" aria-controls="section-menu" class="btn btn-default overlay-lnk mrgn-bttm-0" role="button"><span class="glyphicon glyphicon-list"></span> ${secMenuWords}</a>
 <ul class="pager mrgn-tp-0">
 ${navItems}
 </ul>`;
 
 	return (navProps.prevPage || navProps.nextPage) ? nav : '';
 };
+
 export const buildSecMenu = (secMenu, lang, tomTitleLink, isHomepage) => {
 	if (isHomepage) return '';
 
@@ -60,11 +62,12 @@ ${secMenu}
 	</div>
 </section>`;
 };
+
 export const buildToc = (tocLinks, lang) => tocLinks.trim() ?
 	`\
 <section class="panel panel-default">
 	<header class="panel-heading">
-		<h3 class="panel-title">${lang === 'eng' ? 'Table of Contents' : 'Table des matières'}</h3>
+		<h3 class="panel-title">${lang === 'eng' ? 'Table of contents' : 'Table des matières'}</h3>
 	</header>
 	<div class="panel-body">
 		<ul>

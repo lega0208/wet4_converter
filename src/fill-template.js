@@ -14,8 +14,8 @@ export default function fillTemplate(docObj, wet4path) {
 	const breadcrumbs = buildBreadcrumbs(docObj.breadcrumbs, docObj.pageTitle, docObj.metadata.isHomepage);
 
 	if (docObj.metadata.language === 'eng') {
-		return `<!-- InstanceBegin template="file:///N|/irppd/manuals/Templates/wet40-manuals_secure-en.dwt" codeOutsideHTMLIsLocked="false" -->
-<!DOCTYPE html>
+		return `<!DOCTYPE html>
+<!-- InstanceBegin template="file:///N|/irppd/manuals/Templates/wet40-manuals_secure-en.dwt" codeOutsideHTMLIsLocked="false" -->
 <!--[if lt IE 9]><html class="no-js lt-ie9" lang="en" dir="ltr"><![endif]-->
 <!--[if gt IE 8]><!-->
 <html class="no-js" lang="en" dir="ltr">
@@ -193,8 +193,8 @@ ${nav}
 				<h3 class="hidden-sm hidden-md hidden-lg">Government of Canada links</h3>
 				<ul class="list-inline mrgn-bttm-lg pull-right">
 					<li><a href="\\\\omega.dce-eir.net\\natdfs\\Services\\Central_storage\\ABSB_Secure_Files\\IND\\user_guide\\guide-e.html">User guide for online manuals</a></li>
-					<li class="mrgn-tp-md mrgn-lft-xl"><a href="http://www.cra-arc.gc.ca/menu-eng.html" rel="external"><abbr title="Canada Revenue Agency" rel="external">CRA</abbr> internet</a></li>
-					<li class="mrgn-tp-md mrgn-lft-xl"><a href="http://canada.ca/en/index.html" rel="external">Canada.ca</a></li>
+					<li class="mrgn-tp-md mrgn-lft-xl"><a href="https://www.canada.ca/en/revenue-agency.html" rel="external"><abbr title="Canada Revenue Agency" rel="external">CRA</abbr> internet</a></li>
+					<li class="mrgn-tp-md mrgn-lft-xl"><a href="https://www.canada.ca/en.html" rel="external">Canada.ca</a></li>
 					<li class="mrgn-tp-md mrgn-lft-xl"><a href="http://publiservice.gc.ca/menu_e.html" rel="external">Publiservice</a></li>
 				</ul>
 			</section>
@@ -218,8 +218,8 @@ ${nav}
 <!-- InstanceEnd -->
 </html>`;
 	} else if (docObj.metadata.language === 'fra') {
-		return `<!-- InstanceBegin template="/Templates/wet40-manuals_secure-fr.dwt" codeOutsideHTMLIsLocked="false" -->
-<!DOCTYPE html>
+		return `<!DOCTYPE html>
+<!-- InstanceBegin template="/Templates/wet40-manuals_secure-fr.dwt" codeOutsideHTMLIsLocked="false" -->
 <!--[if lt IE 9]><html class="no-js lt-ie9" lang="fr" dir="ltr"><![endif]-->
 <!--[if gt IE 8]><!-->
 <html class="no-js" lang="fr" dir="ltr">
@@ -325,7 +325,7 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 				<ol class="breadcrumb">
 					<!-- InstanceBeginEditable name="breadcrumbs" -->
 					<li><a href="http://infozone/francais/frames/main/menu-f.asp">Accueil</a></li>
-					<li><a href="http://infozone/francais/francais/r5060502/abs/default-f.html">Direction générale de cotisation, de prestation et de service</a></li>
+					<li><a href="http://infozone/francais/r5060502/abs/default-f.html">Direction générale de cotisation, de prestation et de service</a></li>
 					<li><a href="https://apps.isvcs.net/ebci/cjsc/sfsmnl/main?lang=fr&#38;nextPage=viewManualList">Manuels sécurisés</a></li>
 ${breadcrumbs}
 					<!-- InstanceEndEditable -->
@@ -397,9 +397,9 @@ ${nav}
 			<section>
 				<h3 class="hidden-sm hidden-md hidden-lg">Liens du gouvernement du Canada</h3>
 				<ul class="list-inline mrgn-bttm-lg pull-right">
-					<li><a href="\\\\omega.dce-eir.net\\natdfs\\Services\\Central_storage\\ABSB_Secure_Files\\IND\\user_guide\\guide-f.html">Guide pour les utilisateurs de manuels en ligne </a></li>
-					<li class="mrgn-tp-md mrgn-lft-xl"><a href="http://www.cra-arc.gc.ca/menu-fra.html" rel="external">Internet de l'<abbr title="Agence du revenu du Canada">ARC</abbr></a></li>
-					<li class="mrgn-tp-md mrgn-lft-xl"><a href="http://canada.ca/fr/index.html" rel="external">Canada.ca</a></li>
+					<li><a href="\\\\omega.dce-eir.net\\natdfs\\Services\\Central_storage\\ABSB_Secure_Files\\IND\\user_guide\\guide-f.html">Guide pour les utilisateurs de manuels en ligne</a></li>
+					<li class="mrgn-tp-md mrgn-lft-xl"><a href="https://www.canada.ca/fr/agence-revenu.html" rel="external">Internet de l'<abbr title="Agence du revenu du Canada">ARC</abbr></a></li>
+					<li class="mrgn-tp-md mrgn-lft-xl"><a href="https://www.canada.ca/fr.html" rel="external">Canada.ca</a></li>
 					<li class="mrgn-tp-md mrgn-lft-xl"><a href="http://publiservice.gc.ca/menu_f.html" rel="external">Publiservice</a></li>
 				</ul>
 			</section>
