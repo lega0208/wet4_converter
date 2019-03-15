@@ -78,7 +78,7 @@ ${tocLinks}
 
 export const buildTOMTitleLink = (breadcrumbs) => {
 	const aElemRegex = /<a .+?<\/a>/;
-	const tomTitleElem = breadcrumbs.split('\n')[0];
+	const tomTitleElem = breadcrumbs.trim().split('\r\n')[0];
 
 	const aElem = (aElemRegex.exec(tomTitleElem) || [''])[0];
 

@@ -1,8 +1,9 @@
-import { resolve } from 'path';
 import fs from 'fs-extra';
 import walkFiles from 'walk-asyncgen';
 import commander from 'commander-fixed';
+import { resolve, basename } from 'path';
 import convertFile from './convert-file';
+
 
 // Set default input and output directories to use if no cli arguments are passed
 const defaultDir = process.env.USERPROFILE + '\\desktop\\convert_to_wet4\\';
@@ -16,17 +17,20 @@ commander
 	.option('-i, --infozone', 'Use the infozone CDN resource url rather than a relative path to local resources')
 	.option('-d, --dry', 'Do a dry run to test things (no output)')
 	.option('-e, --exclude <excludeDirs>', 'Specify dirnames to exclude')
+	.option('-g, --gdrive', 'Output to G: drive with imgs, PDFs, etc.')
 	.action(async (inputDir, commanderRef) => {
 		const flags = {
 			infozone: commanderRef.infozone || false,
 			dry: commanderRef.dry || false,
 			exclude: commanderRef.exclude,
+			gdrive: commanderRef.gdrive || false,
 		};
 		// console.log(`inputDir: ${inputDir}\noutputDir: ${commanderRef.outputDir}`);
 		// console.log(`flags: ${JSON.stringify(flags, null, 2)}`);
+		const gdrivePath =
+			'\\\\omega\\natdfs\\cra\\hq\\absb\\absb_h0e\\gv1\\ird2\\ctsd\\dss\\tom_online\\wet4_conversion\\To be verified\\';
 
-		await main(inputDir, commanderRef.outputDir, flags);
-
+		await main(inputDir, commanderRef.outputDir || commanderRef.gdrive ? gdrivePath : undefined, flags);
 	})
 	.parse(process.argv);
 
@@ -34,7 +38,7 @@ async function main(inputDir = defaultDir, outputDir = defaultOutputDir, flags) 
 
 	// Options for the file iterator to use to include/exclude files/folders/extensions that match the regex
 	const opts = {
-		excludeDirs: new RegExp(`Draft|donezo|Verified|images|wet40${flags.exclude ? '|TOM' + flags.exclude.replace(/ /g, '|TOM') : ''}`, 'i'),
+		excludeDirs: new RegExp(`Draft|donezo|test|Verified|images|wet40${flags.exclude ? '|TOM' + flags.exclude.replace(/ /g, '|TOM') : ''}`, 'i'),
 		includeExt: /\.html/
 	};
 
@@ -58,6 +62,7 @@ async function main(inputDir = defaultDir, outputDir = defaultOutputDir, flags) 
 				fileCount++;
 			}
 		}
+		if (!flags.dry) await copyResources(outputDir);
 	} catch (e) {
 		console.error(e);
 	}
@@ -68,4 +73,30 @@ async function main(inputDir = defaultDir, outputDir = defaultOutputDir, flags) 
 
 	console.log('\nConversion finished');
 	console.log(`${fileCount} files were output to ${resolve(outputDir)} in ${elapsedTime} seconds`)
+}
+
+async function copyResources(outputDir) {
+	try {
+		const rootDir = resolve(process.env.USERPROFILE, `Desktop\\convert_to_wet4`); // making multiple variables in case I change the path a lot
+		const manualNames = (await fs.readdir(rootDir)).filter((name) => name.includes('TOM'));
+		const manualPaths = manualNames.map((manualName) => resolve(rootDir, manualName));
+
+		// Options for the file iterator to use to include/exclude files/folders/extensions that match the regex
+		const opts = {
+			includeDirs: new RegExp(`images|pdf|docs`, 'i'),
+			includeExt: /\.(?!html)/
+		};
+
+		for (const manual of manualPaths) {
+			const iter = walkFiles(manual, opts);
+
+			for await (const filePath of iter) {
+				console.log(`Copying ${basename(filePath)}`);
+				fs.copy(filePath, filePath.replace(rootDir, outputDir));
+			}
+		}
+	} catch (e) {
+		console.error('Error copying resources:');
+		console.error(e);
+	}
 }

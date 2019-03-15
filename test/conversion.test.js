@@ -1,43 +1,23 @@
-//require('@babel/register');
 import fs from 'fs-extra';
 import cheerio from 'cheerio';
 import { resolve, basename } from 'path';
 import fileIterator from './file-iter';
 import convertFile from '../src/convert-file';
-
-// get each manual and test them individually
-// iterate through the files, do the conversion, and verify the output.
+import walkFiles from 'walk-asyncgen';
 
 describe('Testing conversion', () => {
-	const specificDir = 'not verified and not donezo';
-	const baseDir = `Desktop\\convert_to_wet4${specificDir ? '\\' + specificDir : ''}`;
-	const rootDir = resolve(process.env.USERPROFILE, baseDir); // making multiple variables in case I change the path a lot
-	const manuals = fs.readdirSync(rootDir).filter((name) => name.includes('TOM'));
-
 	// shorthand functions
 	const makeCheerio = (fileContents) => cheerio.load(fileContents, { decodeEntities: false });
 	const absPath = (manual, name = '') => resolve(rootDir, manual, name);
 
-	describe.each(manuals)('Manual %s:', (manualName) => {
+	describe.each(Object.keys(manuals))('Manual %s:', (manualName) => {
 		const manualPath = absPath(manualName);
-		const filePaths = fileIterator(manualPath);
-
-		it('filePaths should not be empty', () => {
-			expect(filePaths.length).toBeGreaterThan(0);
-		});
+		const filePaths = manuals[manualName];
 
 		describe.each(filePaths)('%s:', (filePath) => {
 			//const fileContent = fs.readFileSync(filePath, 'utf8');
 			const fileContent = convertFile(filePath, manualPath);
 			try {
-				//test('Should have a non-empty cheerio object', async () => {
-				//	const $ = makeCheerio(await fileContent);
-				//	const html = $.html();
-				//
-				//	expect(html).toBeTruthy();
-				//	expect(html).toBeString();
-				//});
-
 				test('Notes don\'t have any errors', async () => {
 					const $ = makeCheerio(await fileContent);
 					const notesRef = $('.alert.alert-info');
@@ -75,7 +55,6 @@ describe('Testing conversion', () => {
 			}
 		});
 	});
-
 });
 
 
