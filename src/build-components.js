@@ -77,10 +77,9 @@ ${tocLinks}
 </section>` : '';
 
 export const buildTOMTitleLink = (breadcrumbs) => {
-	const aElemRegex = /<a .+?<\/a>/;
-	const tomTitleElem = breadcrumbs.trim().split('\r\n')[0];
+	const aElemRegex = /<a [\s\S]+?<\/a>/;
 
-	const aElem = (aElemRegex.exec(tomTitleElem) || [''])[0];
+	const aElem = (aElemRegex.exec(breadcrumbs) || [''])[0];
 
 	if (!aElem) {
 		console.error('Error parsing TOM Title link from breadcrumbs.');

@@ -6,8 +6,9 @@
   "scripts": {
     "test": "jest --noStackTrace",
     "start": "node -r @babel/register ./src/index.js",
-    "watch": "babel src -d build -w",
-    "build": "babel src -d build"
+    "watch": "jest --watch",
+    "build": "babel src -d build",
+    "cache": "node -r @babel/register cache-tom-data.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,7 +18,8 @@
     "@babel/preset-env": "^7.3.4",
     "@babel/preset-stage-2": "^7.0.0",
     "@babel/register": "^7.0.0",
-    "jest": "^24.3.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "jest": "^23.6.0",
     "jest-environment-node": "^24.5.0",
     "jest-expect-message": "^1.0.2",
     "jest-extended": "^0.11.1"
@@ -27,7 +29,6 @@
     "commander-fixed": "^2.16.0",
     "fs-extra": "^6.0.1",
     "js-beautify": "^1.9.0",
-    "klaw-sync": "^6.0.0",
     "walk-asyncgen": "0.0.4"
   }
 }

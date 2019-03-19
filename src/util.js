@@ -43,6 +43,10 @@ export function replaceSpecChars(html) {
 		['œ', '&oelig;'],
 		['’', '\''],
 		['“|”', '"'],
+		['\\s»', '&nbsp;»'],
+		['«\\s', '«&nbsp;'],
+		['(\\d)\s\\$', '$1&nbsp;$'],
+		['(\\d)\s(\\d)', '$1&nbsp;$2'],
 	];
 
 	for (const findReplace of specChars) {

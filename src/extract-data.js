@@ -103,10 +103,12 @@ export default function extractData(fileContents, filePath) {
 
 	const metadata = extractMetadata($);
 
-
 	const langFilename = $('#cn-cmb1 > a').first().attr('href') || '';
 
-	const breadcrumbs = ($('#cn-bcrumb > ol')
+	const $bc = $('#cn-bcrumb > ol');
+	$bc.children('li').each((i, li) => $(li).html($(li).html().replace(/\r?\n/g, '')));
+
+	const breadcrumbs = ($bc
 		.html() || '')
 		.trim()
 		.replace(/ ?&#62;/g, '')
@@ -117,7 +119,7 @@ export default function extractData(fileContents, filePath) {
 
 	const tomTitle = breadcrumbs.trim().split(`\r\n`)[0];
 
-	const tomNumber = /(?:TOM|MOI)(?:\s*|&nbsp;)([\d().]+)/.exec(
+	const tomNumber = /(?:TOM|MOI)(?:\s*|&nbsp;)([\d().&amp;]+)/.exec(
 		tomTitle.replace(/<li><a[^>]+?>(.+?)<\/a><\/li>/, '$1')
 						.replace(/<abbr[^>]+?>(.+?)<\/abbr>/g, '$1')
 	)[1];

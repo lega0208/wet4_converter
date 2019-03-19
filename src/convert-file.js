@@ -6,7 +6,7 @@ import applyWetTransforms from './wetTransforms';
 import finalizeFormat from './util';
 
 export default async function convertFile(filePath, inputDir, flags = {}) {
-	console.log(filePath);
+	//console.log(filePath);
 	// get data from file (string of file contents)
 	const data = await fs.readFile(filePath, 'utf-8');
 	// extract data to be plugged into the template
@@ -27,8 +27,13 @@ export default async function convertFile(filePath, inputDir, flags = {}) {
 	const infozonePath = 'http://infozone';
 	const wet4path = flags.infozone ? infozonePath : localPath;
 
-	// return the filled template
-	return fillTemplate(docData, wet4path);
+	try {
+		// return the filled template
+		return fillTemplate(docData, wet4path);
+	} catch (e) {
+		console.error(`error in ${basename(filePath)}`);
+		console.error(e);
+	}
 }
 
 async function findWet4(inputDir, counter = 0) {

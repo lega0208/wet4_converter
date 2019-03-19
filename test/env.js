@@ -6,28 +6,21 @@ const walkFiles = require('walk-asyncgen');
 const specificDir = 'test';
 const baseDir = `Desktop\\convert_to_wet4${specificDir ? '\\' + specificDir : ''}`;
 const rootDir = resolve(process.env.USERPROFILE, baseDir); // making multiple variables in case I change the path a lot
+const wet2CachePath = resolve('./cache/', 'wet2');
+const wet4CachePath = resolve('./cache/', 'wet4');
 
 const initManuals = async () => {
-	const manuals = {};
-	// make object for manual names & data
+	const manuals = { wet2: {}, wet4: {} };
 	const manualNames = (await fs.readdir(rootDir)).filter((name) => name.includes('TOM'));
 
-	const opts = {
-		excludeDirs: new RegExp(`Draft|donezo|Verified|images|pdf|wet40`, 'i'),
-		includeExt: /\.html/
-	};
-
 	for (const manualName of manualNames) {
-		const manualPath = resolve(rootDir, manualName);
-		const iter = walkFiles(manualPath, opts);
-		const filePaths = [];
+		const wet2Data = await fs.readJSON(resolve(wet2CachePath, `${manualName}.json`));
+		const wet4Data = await fs.readJSON(resolve(wet4CachePath, `${manualName}.json`));
 
-		for await (const file of iter) {
-			filePaths.push(file);
-		}
-
-		manuals[manualName] = await Promise.all(filePaths);
+		manuals.wet2[manualName] = wet2Data;
+		manuals.wet4[manualName] = wet4Data;
 	}
+
 	return manuals;
 };
 

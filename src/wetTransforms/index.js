@@ -111,6 +111,10 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 				currentNote.after(newNote);
 
 				const noteItems = headerRef.add(headerRef.nextUntil('p.h3'));
+				noteItems.each((i, noteItem) => {
+					const $noteItem = $(noteItem);
+					$noteItem.html($noteItem.html().replace(/^\s*(?:&nbsp;)?\s*/g, ''));
+				});
 				noteItems.appendTo(newNote);
 				currentNote = newNote;
 			}
