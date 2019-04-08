@@ -5,10 +5,12 @@
   "main": "src/index.js",
   "scripts": {
     "test": "jest --noStackTrace",
+    "test-all": "jest --noStackTrace -- --all",
     "start": "node -r @babel/register ./src/index.js",
     "watch": "jest --watch",
     "build": "babel src -d build",
-    "cache": "node -r @babel/register cache-tom-data.js"
+    "cache": "node -r @babel/register ./scripts/cache-tom-data.js",
+    "get-fresh": "node ./scripts/get-fresh.js"
   },
   "author": "",
   "license": "ISC",
@@ -28,7 +30,7 @@
     "cheerio": "^0.22.0",
     "commander-fixed": "^2.16.0",
     "fs-extra": "^6.0.1",
-    "js-beautify": "^1.9.0",
+    "js-beautify": "^1.9.1",
     "walk-asyncgen": "0.0.4"
   }
 }

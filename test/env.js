@@ -1,7 +1,6 @@
 const resolve = require('path').resolve;
 const NodeEnvironment = require('jest-environment-node');
 const fs = require('fs-extra');
-const walkFiles = require('walk-asyncgen');
 
 const specificDir = 'test';
 const baseDir = `Desktop\\convert_to_wet4${specificDir ? '\\' + specificDir : ''}`;
@@ -11,13 +10,16 @@ const wet4CachePath = resolve('./cache/', 'wet4');
 
 const initManuals = async () => {
 	const manuals = { wet2: {}, wet4: {} };
-	const manualNames = (await fs.readdir(rootDir)).filter((name) => name.includes('TOM'));
+	const manualsDir = process.env.TEST_ALL ? wet2CachePath : rootDir;
+	const manualNames = (await fs.readdir(manualsDir))
+		.filter((name) => /TOM/.test(name))
+		.map((tomName) => tomName.replace('.json', ''));
 
 	for (const manualName of manualNames) {
-		const wet2Data = await fs.readJSON(resolve(wet2CachePath, `${manualName}.json`));
+		//const wet2Data = await fs.readJSON(resolve(wet2CachePath, `${manualName}.json`));
 		const wet4Data = await fs.readJSON(resolve(wet4CachePath, `${manualName}.json`));
 
-		manuals.wet2[manualName] = wet2Data;
+		//manuals.wet2[manualName] = wet2Data;
 		manuals.wet4[manualName] = wet4Data;
 	}
 

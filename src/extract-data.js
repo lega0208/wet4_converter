@@ -1,7 +1,7 @@
 import cheerio from 'cheerio';
 import { replaceSpecChars } from './util';
 
-const extractMetadata = ($) => {
+const extractMetadata = ($, filepath) => {
 	const metaRefs = $('meta');
 	const metadata = {};
 
@@ -40,12 +40,6 @@ const extractMetadata = ($) => {
 			case 'dc.publisher':
 				metadata.publisher = meta.attribs.content || '';
 				break;
-			case 'dc.language':
-				setIfUndefined('language', (meta.attribs.content || ''));
-				break;
-			case 'dcterms.language':
-				setIfUndefined('language', (meta.attribs.content || ''));
-				break;
 			case 'dcterms.issued':
 				metadata.issued = meta.attribs.content || '';
 				break;
@@ -54,6 +48,13 @@ const extractMetadata = ($) => {
 				break;
 		}
 	});
+
+	if (/-e\.html/.test(filepath)) {
+		metadata.language = 'eng';
+	} else if (/-f\.html/.test(filepath)) {
+		metadata.language = 'fra';
+	}
+
 	return metadata;
 };
 
@@ -101,21 +102,28 @@ export default function extractData(fileContents, filePath) {
 
 	const title = $('title').first().text();
 
-	const metadata = extractMetadata($);
+	const metadata = extractMetadata($, filePath);
 
 	const langFilename = $('#cn-cmb1 > a').first().attr('href') || '';
 
 	const $bc = $('#cn-bcrumb > ol');
-	$bc.children('li').each((i, li) => $(li).html($(li).html().replace(/\r?\n/g, '')));
 
-	const breadcrumbs = ($bc
-		.html() || '')
-		.trim()
-		.replace(/ ?&#62;/g, '')
-		.split('\r\n')
-		.slice(1)
-		.map((li) => `\t\t\t\t\t${li.trim()}`)
-		.join('\r\n');
+	$bc.children('li').each(
+		(i, li) => {
+			const $li = $(li);
+			const sanitizedHtml = $li.html().replace(/\r?\n/g, '');
+			$li.html(sanitizedHtml);
+		}
+	);
+
+	const breadcrumbs =
+		($bc.html() || '')
+			.trim()
+			.replace(/ ?&#62;/g, '')
+			.split('\r\n')
+			.slice(1)
+			.map((li) => `\t\t\t\t\t${li.trim()}`)
+			.join('\r\n');
 
 	const tomTitle = breadcrumbs.trim().split(`\r\n`)[0];
 
@@ -126,21 +134,17 @@ export default function extractData(fileContents, filePath) {
 
 	const pageTitle = ($('h1').first().html() || '').replace(/<!--.+?-->/g, '').trim();
 
-	const toc = ($('div.module-table-contents > ul')
-		.first()
-		.html() || '')
-		.trim()
-		.split('\r\n')
-		.map((li) => `\t\t\t${li.trim()}`)
-		.join('\r\n');
+	const $toc = $('div.module-table-contents').first();
+	$toc.find('p')
+		.filter((p) => !/table(?: des mat| of contents)/i.test($(p).text()))
+		.remove();
+
+	const toc = ($toc.html() || '').trim();
 
 	const secMenu = ($('div.module-menu-section ul')
 		.first()
 		.html() || '')
-		.trim()
-		.split('\r\n')
-		.map((li) => `\t\t\t${li.trim()}`)
-		.join('\r\n');
+		.trim();
 
 	const nav = extractNavItems($);
 

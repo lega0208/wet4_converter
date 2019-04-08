@@ -91,7 +91,7 @@ async function copyResources(outputDir) {
 			const iter = walkFiles(manual, opts);
 
 			for await (const filePath of iter) {
-				console.log(`Copying ${basename(filePath)}`);
+				//console.log(`Copying ${basename(filePath)}`);
 				fs.copy(filePath, filePath.replace(rootDir, outputDir));
 			}
 		}

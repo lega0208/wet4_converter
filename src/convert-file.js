@@ -3,7 +3,7 @@ import { basename, dirname, relative } from 'path';
 import extractData from './extract-data';
 import fillTemplate from './fill-template';
 import applyWetTransforms from './wetTransforms';
-import finalizeFormat from './util';
+import { formatHtml } from './util';
 
 export default async function convertFile(filePath, inputDir, flags = {}) {
 	//console.log(filePath);
@@ -20,7 +20,8 @@ export default async function convertFile(filePath, inputDir, flags = {}) {
 	//});
 
 	// transform html into wet4
-	docData.content = finalizeFormat(await applyWetTransforms(docData.content, basename(filePath), isHomepage, manualId));
+	docData.toc = await applyWetTransforms(docData.toc, basename(filePath), isHomepage, manualId);
+	docData.content = formatHtml(await applyWetTransforms(docData.content, basename(filePath), isHomepage, manualId));
 
 	// set resource (wet40 folder) path based on if infozone flag was passed
 	const localPath = relative(dirname(filePath), (await findWet4(inputDir))).replace(/\\/g, '/');

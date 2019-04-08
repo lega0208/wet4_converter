@@ -1,3 +1,4 @@
+import { formatHtml } from './util';
 
 export const buildNav = (navProps, lang, tomNumber) => {
 	const secMenuWords = lang === 'eng' ? 'Section menu' : 'Menu de section';
@@ -6,14 +7,11 @@ export const buildNav = (navProps, lang, tomNumber) => {
 	if (navProps.prevPage) {
 		const prevPageContent = '<span class="glyphicon glyphicon-arrow-left"></span>&nbsp;' + (
 			lang === 'eng'
-				? `Previous Page <span class="wb-inv"> of`
-					+ ` <abbr title="Taxation Operations Manual">TOM</abbr> ${tomNumber}</span>`
-				: `Page précédente <span class="wb-inv"> du`
-					+ ` <abbr title="Manuels des opérations de l'impôt">MOI</abbr> ${tomNumber}</span>`
+				? `Previous Page <span class="wb-inv"> of <abbr title="Taxation Operations Manual">TOM</abbr> ${tomNumber}</span>`
+				: `Page précédente <span class="wb-inv"> du <abbr title="Manuels des opérations de l'impôt">MOI</abbr> ${tomNumber}</span>`
 		);
 
-			navItems +=
-				`	<li><a class="btn btn-default mrgn-btm-0 mrgn-rght-0" href="${navProps.prevPage}">${prevPageContent}</a></li>`;
+			navItems += `	<li><a class="btn btn-default mrgn-btm-0 mrgn-rght-0" href="${navProps.prevPage}">${prevPageContent}</a></li>`;
 	}
 
 	if (navProps.nextPage) {
@@ -23,15 +21,11 @@ export const buildNav = (navProps, lang, tomNumber) => {
 
 		const nextPageContent = (
 			lang === 'eng'
-				? `Next Page <span class="wb-inv"> of`
-					+ ` <abbr title="Taxation Operations Manual">TOM</abbr> ${tomNumber}</span>`
-				: `Page suivante <span class="wb-inv"> du`
-					+ ` <abbr title="Manuels des opérations de l'impôt">MOI</abbr> ${tomNumber}</span>`
-			)
-		+ ' <span class="glyphicon glyphicon-arrow-right"></span>';
+				? `Next Page <span class="wb-inv"> of <abbr title="Taxation Operations Manual">TOM</abbr> ${tomNumber}</span>`
+				: `Page suivante <span class="wb-inv"> du <abbr title="Manuels des opérations de l'impôt">MOI</abbr> ${tomNumber}</span>`
+			) + ' <span class="glyphicon glyphicon-arrow-right"></span>';
 
-		navItems +=
-			`	<li><a class="btn btn-default mrgn-top-0 mrgn-lft-0" href="${navProps.nextPage}">${nextPageContent}</a></li>`;
+		navItems += `	<li><a class="btn btn-default mrgn-top-0 mrgn-lft-0" href="${navProps.nextPage}">${nextPageContent}</a></li>`;
 	}
 
 	const nav =
@@ -57,7 +51,12 @@ export const buildSecMenu = (secMenu, lang, tomTitleLink, isHomepage) => {
 	<div class="modal-body">
 		<h3 class="mrgn-rght-md mrgn-tp-0 mrgn-bttm-md">${tomTitleLink}</h3>
 		<ul class="list-unstyled mrgn-rght-md">
-${secMenu}
+${
+		formatHtml(secMenu.replace(/\r\n/g, '').replace(/<\/li><li/g, '</li>\r\n<li'))
+			.split('\r\n')
+			.map((li) => `\t\t\t${li.trim()}`)
+			.join('\r\n')
+}
 		</ul>
 	</div>
 </section>`;
@@ -70,9 +69,12 @@ export const buildToc = (tocLinks, lang) => tocLinks.trim() ?
 		<h3 class="panel-title">${lang === 'eng' ? 'Table of contents' : 'Table des matières'}</h3>
 	</header>
 	<div class="panel-body">
-		<ul>
-${tocLinks}
-		</ul>
+${
+	formatHtml(tocLinks)
+		.split('\r\n')
+		.map((li) => `\t\t${li}`)
+		.join('\r\n')
+}
 	</div>
 </section>` : '';
 
@@ -89,7 +91,7 @@ export const buildTOMTitleLink = (breadcrumbs) => {
 };
 
 export const buildBreadcrumbs = (breadcrumbs, pageTitle, isHomepage) => {
-	if (isHomepage) {
+	if (isHomepage) { // if homepage, unwrap the title
 		const bcLines = breadcrumbs.split('\r\n');
 		bcLines[bcLines.length - 1] = bcLines[bcLines.length - 1].replace(/<a[^>]+?>(.+?)<\/a>/, '$1');
 

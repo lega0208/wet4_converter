@@ -13,6 +13,7 @@ export default function transformClasses($) {
 		'equalize': 'wb-eqht',
 		'float-right': 'pull-right',
 		'float-left': 'pull-left',
+		'cn-invisible': 'wb-inv',
 		'color-accent': 'text-primary',
 		'color-attention': 'text-danger',
 		'font-xsmall': 'small',
@@ -26,6 +27,12 @@ export default function transformClasses($) {
 		'indent-medium': 'mrgn-lft-md',
 		'indent-large': 'mrgn-lft-lg',
 		'indent-xlarge': 'mrgn-lft-xl',
+		'list-bullet-none': 'list-unstyled',
+		'list-lower-alpha': 'lst-lwr-alph',
+		'list-upper-alpha': 'lst-upr-alph',
+		'list-lower-roman': 'lst-lwr-rmn',
+		'list-upper-roman': 'lst-upr-rmn',
+		'list-numeric': 'lst-num',
 		'margin-bottom-none': 'mrgn-bttm-0',
 		'margin-bottom-small': 'mrgn-bttm-sm',
 		'margin-bottom-medium': 'mrgn-bttm-md',
@@ -41,15 +48,10 @@ export default function transformClasses($) {
 		'margin-right-medium': 'mrgn-rght-sm',
 		'margin-right-large': 'mrgn-rght-lg',
 		'margin-right-xlarge': 'mrgn-rght-xl',
-		'cn-invisible': 'wb-inv',
-		'list-bullet-none': 'list-unstyled',
-		'list-lower-alpha': 'lst-lwr-alph',
-		'list-upper-alpha': 'lst-upr-alph',
-		'list-lower-roman': 'lst-lwr-rmn',
-		'list-upper-roman': 'lst-upr-rmn',
-		'list-numeric': 'lst-num',
-		'zebra': 'table-striped',
+		'row-start': '',
+		'row-end': '',
 		'wrap-none': 'nowrap',
+		'zebra': 'table-striped',
 		//'table-accent': '',
 
 		// Module classes
@@ -66,6 +68,14 @@ export default function transformClasses($) {
 		'span-4': 'col-md-8',
 		'span-5': 'col-md-10',
 		'span-6': 'col-md-12',
+
+		// border-span classes
+		'border-span-1': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
+		'border-span-2': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
+		'border-span-3': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
+		'border-span-4': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
+		'border-span-5': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
+		'border-span-6': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
 	};
 
 	// function to call for each entry in the class map

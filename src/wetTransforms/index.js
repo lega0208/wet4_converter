@@ -1,5 +1,6 @@
 import cheerio from 'cheerio';
 import transformClasses from './transformClasses';
+import convertDivTables from './div-tables';
 import { doTOMTransforms } from './custom-transforms';
 
 export default function applyWetTransforms(html, filename, isHomepage, manualId) {
@@ -72,42 +73,34 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 
 		const noteContent = elemRef.html();
 
-		// Move header to seperate <P> w/ header class
+		// Move header to seperate <p> w/ header class
 		const convertedContent =
 			noteContent.replace(
-				/<p( id=".+?")?><strong>((?:Note|Remarque|Example|Exemple)(?:(?:\s*|&nbsp;)?#?\d+)?)([^:\r\n\d]*?):/gi,
-				'<p$1 class="h3">$2</p>\n'
-				+ '<p><strong>$3'
+				/<p( id=".+?")?>(\**?)<strong>((?:Note|Remarque|Example|Exemple)(?:(?:\s*|&nbsp;)?#?\d+)?)([^:\r\n\d]*?)(?:&nbsp;)?:/gi,
+				'<p$1 class="h3">$2$3</p>\r\n'
+				+ '<p><strong>$4'
 			).trim();
 		elemRef.html(convertedContent);
-		elemRef.find('strong').filter((i, strong) => !$(strong).text()).remove();
-
-		// fix note headers
-		//elemRef.children('p').each((i, p) => {
-		//	const pRef = $(p);
-		//
-		//	const firstStrong = pRef.find('strong').first();
-		//	if (/note|remarque/i.test(firstStrong.text())) {
-		//		const strong = firstStrong.get(0);
-		//		strong.tagName = 'p';
-		//		firstStrong.addClass('h3');
-		//		firstStrong.text(firstStrong.text().replace(/((?:note|remarque)(?: ?\d)?)(?:\s*|&nbsp;):(?:\s*|&nbsp;)/i, '$1').trim());
-		//		firstStrong.insertBefore(p);
-		//		pRef.html(pRef.html().replace(/^(?:\s*|&nbsp;):(?:\s*|&nbsp;)/, '').trim());
-		//	}
-		//});
+		elemRef.find('strong').filter((i, strong) => !$(strong).text().trim()).remove();
+		if (elemRef.children('p.h3').length > 0) {
+			const firstPara = $(elemRef.children().get(1));
+			const trimmedPara = firstPara.html().replace(/^\s*(?:&nbsp;)?\s*/, '');
+			firstPara.html(trimmedPara);
+		}
 
 		// split into multiple notes if necessary
 		const noteHeaders = elemRef.find('p.h3');
 		let currentNote = elemRef;
 		noteHeaders.each((i, header) => {
-			if (noteHeaders.get(i + 1)) {
+			if (noteHeaders.length > 1 && i === 0) {
 				currentNote.addClass('mrgn-bttm-0');
+				currentNote.attr('class', currentNote.attr('class').replace(/(?:^| )margin-bottom-\S+/, ''));
 			}
 
 			if (i !== 0) {
 				const headerRef = $(header);
 				const newNote = currentNote.clone().empty();
+				newNote.attr('class', newNote.attr('class').replace(/(?:^| )margin-top-\S+/, ''));
 				currentNote.after(newNote);
 
 				const noteItems = headerRef.add(headerRef.nextUntil('p.h3'));
@@ -116,10 +109,17 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 					$noteItem.html($noteItem.html().replace(/^\s*(?:&nbsp;)?\s*/g, ''));
 				});
 				noteItems.appendTo(newNote);
+
+				currentNote.addClass('mrgn-bttm-0');
+				currentNote.attr('class', currentNote.attr('class').replace(/(?:^| )margin-bottom-\S+/, ''));
+
+				if (i === noteHeaders.length - 1) {
+					newNote.removeClass('mrgn-bttm-0');
+				}
+
 				currentNote = newNote;
 			}
 		});
-
 
 		const nextSiblingRef = currentNote.next();
 
@@ -183,39 +183,7 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 		tableRef.find('.row-start, .row-end').each((i, elem) => $(elem).removeClass('row-start').removeClass('row-end'));
 	});
 
-	$('.div-table').each((i, divTable) => {
-		const divTableRef = $(divTable);
-		const newTable = $('<table/>');
-		divTableRef.before(newTable);
-
-		divTableRef.find('.cn-invisible').remove();
-
-		divTableRef.children().each((i, row) => {
-			const rowRef = $(row);
-
-			if (rowRef.hasClass('headers')) {
-				const headerRow = $('<tr/>');
-				headerRow.appendTo(newTable);
-
-				rowRef.children().each((i, rowChild) => {
-					const headerElem = $(rowChild).find('.background-accent').first();
-					const headerContent = headerElem.html();
-					$(`<th class="text-center bg-primary">${headerContent}</th>`).appendTo(headerRow);
-					headerElem.remove();
-				});
-			}
-
-			const tableRow = $('<tr/>');
-			tableRow.appendTo(newTable);
-
-			rowRef.children().each((i, rowChild) => {
-				const tdRef = $('<td/>');
-				tdRef.appendTo(tableRow);
-				$(rowChild).contents().appendTo(tdRef);
-			});
-		});
-		divTableRef.remove();
-	});
+	convertDivTables($);
 
 	// add table classes
 	$('table').each((i, table) => $(table).addClass('table table-bordered'));
@@ -230,49 +198,24 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 		}
 	});
 
-	//const rowStarts = $('.row-start');
-	//rowStarts.each((i, elem) => {
+	//$('.grid').each((i, elem) => {
 	//	const elemRef = $(elem);
 	//
-	//	const rowWrapper = $('<div class="row"></div>');
-	//	const nextRowStart = rowStarts.get(i + 1) || '';
-	//	const rowElems = elemRef.add(elemRef.nextUntil(nextRowStart));
-	//	elemRef.before(rowWrapper);
-	//	rowWrapper.prepend(rowElems);
+	//	elemRef.attr('class', 'container mrgn-tp-md mrgn-bttm-md');
+	//	const rowStartRefs = elemRef.children('.row-start');
 	//
-	//	if (rowWrapper.parent().hasClass('equalize')) {
-	//		rowWrapper.parent().removeClass('equalize');
-	//		rowWrapper.addClass('equalize');
-	//	}
-	//
-	//	// make sure previous sibling(s) are in rows
-	//	rowWrapper.prevAll(':not(.row)').wrap('<div class="row" />');
-	//
-	//	// move items that aren't "part of the row" to a new row.
-	//	const nonRowItems = rowElems.filter('.row-end').nextAll(':not(.row-start)');
-	//	if (nonRowItems.length > 0) {
-	//		const newRow = $('<div class="row" />');
-	//		rowWrapper.after(newRow);
-	//		newRow.prepend(nonRowItems);
-	//	}
+	//	rowStartRefs.each((i, rowStart) => {
+	//		const rowStartRef = $(rowStart);
+	//		const restOfRow = rowStartRefs.get(i + 1) ? rowStartRef.nextUntil(rowStartRefs.get(i + 1)) : rowStartRef.nextAll();
+	//		const rowElem = $('<div class="row" />');
+	//		rowStartRef.wrap(rowElem);
+	//		rowStartRef.removeClass('row-start');
+	//		restOfRow.removeClass('row-end');
+	//		restOfRow.appendTo(rowElem);
+	//	});
 	//});
-	$('.grid').each((i, elem) => {
-		const elemRef = $(elem);
 
-		elemRef.attr('class', 'container mrgn-tp-md mrgn-bttm-md');
-		const rowStartRefs = elemRef.children('.row-start');
-
-		rowStartRefs.each((i, rowStart) => {
-			const rowStartRef = $(rowStart);
-			const restOfRow = rowStartRefs.get(i + 1) ? rowStartRef.nextUntil(rowStartRefs.get(i + 1)) : rowStartRef.nextAll();
-			const rowElem = $('<div class="row" />');
-			rowStartRef.wrap(rowElem);
-			rowStartRef.removeClass('row-start');
-			restOfRow.removeClass('row-end');
-			restOfRow.appendTo(rowElem);
-		});
-	});
-
+	// clean up imgs - remove width/height attribs, unwrap from <p>s
 	$('img').each((i, img) => {
 		const imgRef = $(img);
 		imgRef.removeAttr('width').removeAttr('height');
@@ -287,9 +230,33 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 				parentRef.replaceWith(imgRef);
 			}
 		}
+		if (!img.attribs.class || img.attribs.class && !img.attribs.class.includes('margin-bottom')) {
+			imgRef.addClass('mrgn-bttm-md');
+		}
 	});
 
 	transformClasses($);
 
-	return $.html();
+	// misc formatting and tidying
+
+	// todo: if multiple mrgn classes, only keep the biggest one
+
+	// need to re-parse html for whatever reason
+	const $$ = cheerio.load($.html(), { decodeEntities: false });
+
+	// move improperly nested elements into <li>s
+	$$('ol > :not(li), ul > :not(li)').each((i, elem) => {
+		const $elem = $$(elem);
+
+		if ($elem.prev('li').length > 0) {
+			$elem.appendTo($elem.prev());
+		}
+	});
+
+	// add margins to li children
+	$$('li > p, li > div, li img, li table')
+		.filter((i, el) => !$(el).hasClass('mrgn-tp-md') && !$(el).prev().hasClass('mrgn-bttm-0'))
+		.addClass('mrgn-tp-md');
+
+	return $$.html();
 }

@@ -1,4 +1,4 @@
 require('jest-extended');
 require('jest-expect-message');
 
-jest.setTimeout(40000);
+jest.setTimeout(10000);

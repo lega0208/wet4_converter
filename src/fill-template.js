@@ -23,7 +23,7 @@ export default function fillTemplate(docObj, wet4path) {
 <head>
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-<!-- Web Experience Toolkit (WET4.0.12) / Bo�te � outils de l'exp�rience Web (BOEW4.0.12)
+<!-- Web Experience Toolkit (WET4.0.12) / Boîte à outils de l'expérience Web (BOEW4.0.12)
 wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
 <!-- InstanceBeginEditable name="doctitle" -->
 <title>${docObj.title}</title>
@@ -227,7 +227,7 @@ ${nav}
 <head>
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-<!-- Web Experience Toolkit (WET4.0.12) / Bo�te � outils de l'expérience Web (BOEW4.0.12)
+<!-- Web Experience Toolkit (WET4.0.12) / Boîte à outils de l'expérience Web (BOEW4.0.12)
 wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
 <!-- InstanceBeginEditable name="doctitle" -->
 <title>${docObj.title}</title>

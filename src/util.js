@@ -1,5 +1,26 @@
 const beautifyHTML = require('js-beautify').html;
 
+const inlineElems = [
+	'a', 'abbr', 'area', 'audio', 'b', 'br', 'button', 'canvas', 'cite',
+	'code', 'data', 'datalist', 'del', 'em', 'embed', 'i', 'iframe',
+	'input', 'ins', 'kbd', 'label', 'mark', 'math', 'meter', 'noscript',
+	'progress', 'select', 'small', 'span', 'strong', 'sub', 'sup', 'svg',
+	'template', 'textarea', 'time', 'u', 'video', 'wbr', 'text',
+];
+
+export function moveNestedElemsToNewline(html) {
+	const re =
+		new RegExp(`(\\s*<li[^>]*?>.+?)(<(?!(?:${inlineElems.join('|')})(?: [^>]+)?>)[a-z]+?(?: [^>]+)?>)[ \t]*`, 'm');
+
+	html = html.split('\r\n').filter((line) => !!line.trim()).join('\r\n');
+
+	while (re.test(html)) {
+		html = html.replace(re, '$1\r\n$2');
+	}
+
+	return html;
+}
+
 export function beautify(html) {
 	const config = {
 		indent_size: 2,
@@ -9,10 +30,18 @@ export function beautify(html) {
 		unescape_strings: true,
 		wrap_line_length: 0,
 		extra_liners: 'h1,h2,h3,h4,h5',
-		preserve_newlines: false,
+		preserve_newlines: true,
+		inline: inlineElems,
 	};
 
-	return beautifyHTML(html, config).replace(/\s*(<img.+?>)/g, '\r\n$1');
+	//if (/The <strong>Search Work Items<\/strong> main screen allows you to select from two tabs\./.test(html)) {
+	//	console.log(html);
+	//}
+
+	html = moveNestedElemsToNewline(html, inlineElems);
+
+	//return html;
+	return beautifyHTML(html, config);
 }
 
 export function replaceSpecChars(html) {
@@ -73,10 +102,11 @@ export function formatContent(html) {
 
 		// remove lines if multiple headers
 		if (isHeader(line)
-				&& prevLine !== null
-				&& prevPrevLine !== null
-				&& isBlankLine(getPrevLine(i))
-				&& isHeader(getPrevPrevLine(i))) {
+			&& prevLine !== null
+			&& prevPrevLine !== null
+			&& isBlankLine(getPrevLine(i))
+			&& isHeader(getPrevPrevLine(i))
+		) {
 			removePrevLine(i);
 		}
 
@@ -105,4 +135,4 @@ export function formatContent(html) {
 	return lines.filter((line) => !/^{removed}$/.test(line)).join('\r\n');
 }
 
-export default (html) => formatContent(beautify(replaceSpecChars(html)));
+export const formatHtml = (html) => formatContent(beautify(replaceSpecChars(html)));
