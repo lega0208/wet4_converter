@@ -55,11 +55,11 @@ export default function transformClasses($) {
 		//'table-accent': '',
 
 		// Module classes
-		'module-note': 'alert alert-info mrgn-tp-md',
-		'module-info': 'alert alert-info mrgn-tp-md',
-		'module-tool': 'alert alert-info mrgn-tp-md',
-		'module-alert': 'alert alert-warning mrgn-tp-md',
-		'module-attention': 'alert alert-danger mrgn-tp-md',
+		'module-note': 'alert alert-info',
+		'module-info': 'alert alert-info',
+		'module-tool': 'alert alert-info',
+		'module-alert': 'alert alert-warning',
+		'module-attention': 'alert alert-danger',
 
 		// Grid classes
 		'span-1': 'col-md-2',
@@ -70,12 +70,12 @@ export default function transformClasses($) {
 		'span-6': 'col-md-12',
 
 		// border-span classes
-		'border-span-1': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
-		'border-span-2': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
-		'border-span-3': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
-		'border-span-4': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
-		'border-span-5': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
-		'border-span-6': 'brdr-lft brdr-rght brdr-tp brdr-bttm',
+		'border-span-1': 'brdr-lft brdr-rght brdr-tp brdr-bttm img-rounded',
+		'border-span-2': 'brdr-lft brdr-rght brdr-tp brdr-bttm img-rounded',
+		'border-span-3': 'brdr-lft brdr-rght brdr-tp brdr-bttm img-rounded',
+		'border-span-4': 'brdr-lft brdr-rght brdr-tp brdr-bttm img-rounded',
+		'border-span-5': 'brdr-lft brdr-rght brdr-tp brdr-bttm img-rounded',
+		'border-span-6': 'brdr-lft brdr-rght brdr-tp brdr-bttm img-rounded',
 	};
 
 	// function to call for each entry in the class map

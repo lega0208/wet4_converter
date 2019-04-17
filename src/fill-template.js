@@ -3,7 +3,7 @@ import {
 	buildTOMTitleLink,
 	buildNav,
 	buildSecMenu,
-	buildBreadcrumbs,
+	buildBreadcrumbs, buildAttachment,
 } from './build-components';
 
 export default function fillTemplate(docObj, wet4path) {
@@ -12,6 +12,7 @@ export default function fillTemplate(docObj, wet4path) {
 	const nav = buildNav(docObj.nav, docObj.metadata.language, docObj.tomNumber);
 	const secMenu = buildSecMenu(docObj.secMenu, docObj.metadata.language, tomTitleLink, docObj.metadata.isHomepage);
 	const breadcrumbs = buildBreadcrumbs(docObj.breadcrumbs, docObj.pageTitle, docObj.metadata.isHomepage);
+	const attachment = buildAttachment(docObj.attachment);
 
 	if (docObj.metadata.language === 'eng') {
 		return `<!DOCTYPE html>
@@ -31,7 +32,7 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 <meta content="width=device-width,initial-scale=1" name="viewport">
 	<!-- InstanceBeginEditable name="metadata" -->
 	<meta name="dcterms.title" content="${docObj.metadata.title}" /> 
-	<meta name="ManualHomePage" content="${docObj.metadata.isHomepage}" />  
+	<meta name="ManualHomePage" content="${docObj.metadata.isHomepage || ''}" />  
 	<meta name="ManualID" content="${docObj.metadata.manualId}" />
 	<meta name="ManualName" content="${docObj.metadata.manualName}" />
 	<meta name="ManualGroupID" content="" />
@@ -161,7 +162,7 @@ ${toc}
 
 <!-- Searchable content begins / debut de la recherche du contenu -->
 <!-- InstanceBeginEditable name="content" -->
-
+${attachment}
 ${docObj.content}
 
 <!-- InstanceEndEditable -->
@@ -173,7 +174,7 @@ ${nav}
 <!-- InstanceEndEditable -->
 
 <div class="pull-left">
-	<p><a class="btn btn-default" href="mailto:SEMP-PMES@cra-arc.gc.ca" ><span class="glyphicon glyphicon-comment"></span> Feedback about this manual</a></p>
+	<p><a class="btn btn-default" href="mailto:SEMP-PMES@cra-arc.gc.ca"><span class="glyphicon glyphicon-comment"></span> Feedback about this manual</a></p>
 </div>
 	<dl id="wb-dtmd" class="mrgn-tp-0">
 		<dt>Last updated:&#32;</dt>
@@ -235,7 +236,7 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 <meta content="width=device-width,initial-scale=1" name="viewport">
 	<!-- InstanceBeginEditable name="metadata" -->
 	<meta name="dcterms.title" content="${docObj.metadata.title}" /> 
-	<meta name="ManualHomePage" content="${docObj.metadata.isHomepage}" />  
+	<meta name="ManualHomePage" content="${docObj.metadata.isHomepage || ''}" />  
 	<meta name="ManualID" content="${docObj.metadata.manualId}" />
 	<meta name="ManualName" content="${docObj.metadata.manualName}" />
 	<meta name="ManualGroupID" content="" />
@@ -366,7 +367,7 @@ ${toc}
 
 <!-- Searchable content begins / debut de la recherche du contenu -->
 <!-- InstanceBeginEditable name="content" -->
-
+${attachment}
 ${docObj.content}
 
 <!-- InstanceEndEditable --> 
@@ -378,7 +379,7 @@ ${nav}
 <!-- InstanceEndEditable -->
 
 <div class="pull-left">
-	<p><a class="btn btn-default" href="mailto:SEMP-PMES@cra-arc.gc.ca" ><span class="glyphicon glyphicon-comment"></span> Rétroaction à l'équipe des Manuels sécurisés</a></p>
+	<p><a class="btn btn-default" href="mailto:SEMP-PMES@cra-arc.gc.ca"><span class="glyphicon glyphicon-comment"></span> Rétroaction à l'équipe des Manuels sécurisés</a></p>
 </div>		
 <dl id="wb-dtmd" class="mrgn-tp-0">
 	<dt>Dernière mise à jour&#160;:&#32;</dt>

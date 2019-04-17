@@ -17,11 +17,13 @@ const tomsPath = `\\\\omega\\natdfs\\Services\\Central_storage\\Testing_ABSB_Sec
 const oldOutputPath = 'cache/wet2/';
 const newOutputPath = 'cache/wet4/';
 
+const startTime = Date.now();
+
 (async () => {
-	const tomRegex = /TOM/;
+	const tomRegex = new RegExp(`TOM${process.argv.length > 2 ? process.argv.slice(2).join('|') : ''}`);
 	const wet4TomsRegex = /TOM(?!54|9990|1990|3550)/;
 	const tomNames = (await fs.readdir(tomsPath))
-		.filter((tomPath) => tomRegex.test(tomPath) && wet4TomsRegex.test(tomPath));
+		.filter((tomPath) => tomRegex.test(tomPath) && wet4TomsRegex.test(tomPath) && !tomsToSkip.includes(tomPath));
 
 	for (const tomName of tomNames) {
 		console.log(`caching ${tomName}`);
@@ -69,9 +71,13 @@ const newOutputPath = 'cache/wet4/';
 			console.error(e);
 		}
 	}
-})().then(() => console.log('donezo!'));
+})().then(() => {
+	const endTime = Date.now();
+	console.log('donezo!');
+	console.log(`Caching finished in ${(new Date(endTime - startTime)).getMinutes()} minutes`);
+});
 
-async function convertData(fileData, filePath) {
+export async function convertData(fileData, filePath) {
 	const { isHomepage, manualId } = fileData.metadata;
 	const content = await applyWetTransforms(fileData.content, basename(filePath), isHomepage, manualId);
 

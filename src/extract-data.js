@@ -151,6 +151,20 @@ export default function extractData(fileContents, filePath) {
 	const content =
 		extract(/<!--\sSearchable\scontent\sbegins\s\/\sdebut\sde\sla\srecherche\sdu\scont.+?-->\s+?([\s\S]+)<!--\sSearchable\scontent\sends\s\/\sfin\sde\sla\srecherche\sdu\scontenu\s-->/i);
 
+	const attachment = {
+		text: '',
+		uri: '',
+	};
+
+	const attachmentAElems = $('a').filter((i, a) => /\.(?:pdf|docx?|xlsx)/i.test(a.attribs.href));
+	const contentAttachments = $('a', content).filter((i, a) => /\.(?:pdf|docx?|xlsx)/i.test(a.attribs.href));
+
+	if (attachmentAElems.length === 1 && contentAttachments.length === 0) {
+		const attachmentParent = attachmentAElems.parent();
+		attachment.uri = attachmentAElems.attr('href');
+		attachment.text = attachmentParent.html().replace(/(.*?)<a[^>]+?>(.+?)<\/a>(.*?)/, '$1$2$3');
+	}
+
 	return {
 		title: replaceSpecChars(title),
 		metadata,
@@ -162,6 +176,7 @@ export default function extractData(fileContents, filePath) {
 		toc: replaceSpecChars(toc),
 		secMenu: replaceSpecChars(secMenu),
 		nav,
-		content
+		content,
+		attachment,
 	};
 }

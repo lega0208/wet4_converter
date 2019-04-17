@@ -1,4 +1,4 @@
-import cheerio from 'cheerio';
+﻿import cheerio from 'cheerio';
 import transformClasses from './transformClasses';
 import convertDivTables from './div-tables';
 import { doTOMTransforms } from './custom-transforms';
@@ -66,26 +66,71 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 	}
 
 	// transform notes
-	$('div.module-note, div.module-info').each((i, elem) => {
+	$('div.module-note, div.module-info, div.module-alert, div.module-attention').each((i, elem) => {
 		const elemRef = $(elem);
-		elemRef.removeClass('module-note module-info span-2 span-3 span-4 span-5 span-6');
-		elemRef.addClass('alert alert-info');
+		elemRef.removeClass('span-2 span-3 span-4 span-5 span-6');
 
 		const noteContent = elemRef.html();
 
 		// Move header to seperate <p> w/ header class
-		const convertedContent =
-			noteContent.replace(
-				/<p( id=".+?")?>(\**?)<strong>((?:Note|Remarque|Example|Exemple)(?:(?:\s*|&nbsp;)?#?\d+)?)([^:\r\n\d]*?)(?:&nbsp;)?:/gi,
-				'<p$1 class="h3">$2$3</p>\r\n'
-				+ '<p><strong>$4'
-			).trim();
+		const noteHeaderStrings = [
+			'Note',
+			'Remarque',
+			'(?:For(?: |&nbsp;))?Example',
+			'(?:Par(?: |&nbsp;))?Exemple',
+			'Important',
+			'Exception',
+			'Sample text',
+			'Exemple de texte',
+			'Verify',
+			'Vérifier',
+		];
+		const notePStartRegex = '<p( [^>]+)?>\\s*?(\\**?)\\s*?<strong>\\s*?';
+		const headerStringsRegex = `(\\**?(?:${noteHeaderStrings.join('|')})s?(?:(?:\\s*|&nbsp;)?#?\\d+\\*?)?)`;
+		const headerEndRegex = '([^:\\r\\n\\d]*?)(?:&nbsp;)?(:|</strong>)';
+		const headerRegex = new RegExp(`${notePStartRegex}${headerStringsRegex}${headerEndRegex}`, 'gi');
+
+		const convertedContent = noteContent.replace(/<\/strong>(\s*|&nbsp;)<strong>/g, '$1')
+			.replace(headerRegex, '<h3$1>$2$3</h3>\r\n<p><strong>$4$5')
+			.trim()
+			.replace(/(<h3[^>]*>.+?<\/h3>\s*<p[^>]*>)\s*(?:&nbsp;)?<strong>(?:\s+|&nbsp;)?\s*:\s*(?:&nbsp;)?\s*/g, '$1<strong>')
+			.replace(/(<h3[^>]*>.+?<\/h3>\s*<p[^>]*>)\s*(?:&nbsp;)?<strong>\s*(?:&nbsp;)?\s*<\/strong>\s*/g, '$1')
+			.replace(/(<h3[^>]*>.+?<\/h3>\s*<p[^>]*>)\s*(?:&nbsp;)?\s*:\s*(?:&nbsp;)?\s*/g, '$1')
+			.replace(/(<h3[^>]*>)\s*(?:&nbsp;)?\s*/g, '$1');
+
 		elemRef.html(convertedContent);
-		elemRef.find('strong').filter((i, strong) => !$(strong).text().trim()).remove();
+
+		elemRef.find('h3').each((i, header) => {
+			header.tagName = 'p';
+			$(header).addClass('h3');
+		});
+
+		elemRef.find('strong').filter((i, strong) => {
+			const text = $(strong).text().trim();
+			return !text || /^&nbsp;$/.test(text);
+		}).remove();
+
+		elemRef.find('p').filter((i, p) => !$(p).html()).remove();
+
 		if (elemRef.children('p.h3').length > 0) {
+			const header = $(elemRef.children('p.h3').first());
+
+			// add colon to alerts that should have one
+			if (/For(?:\s|&nbsp;)example/i.test(header.text())) {
+				header.html(header.html() + ':');
+			} else if (/Par(?:\s|&nbsp;)exemple/i.test(header.text())) {
+				header.html(header.html() + ' :');
+			}
+
 			const firstPara = $(elemRef.children().get(1));
-			const trimmedPara = firstPara.html().replace(/^\s*(?:&nbsp;)?\s*/, '');
+			let trimmedPara = firstPara.html().replace(/^\s*(?:&nbsp;)?\s*/, '');
 			firstPara.html(trimmedPara);
+
+			if (/^(?!\r?\n)\s/.test(firstPara.text())) {
+				const paraHtml = firstPara.html();
+
+				firstPara.html(paraHtml.replace(/^(<[^>]+?>)\s+/, '$1'));
+			}
 		}
 
 		// split into multiple notes if necessary
@@ -140,20 +185,20 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 	});
 
 	// remove spans and clears from other modules, fix bottom margins if nested in a list
-	$('div.module-info, div.module-tool, div.module-alert, div.module-attention').each((i, elem) => {
-		const elemRef = $(elem);
-		elemRef.removeClass('span-2 span-3 span-4 span-5 span-6');
-
-		const nextSiblingRef = elemRef.next();
-
-		if (nextSiblingRef.hasClass('clear')) {
-			nextSiblingRef.remove();
-		}
-
-		if (elemRef.parent().get(0) && elemRef.parent().get(0).tagName === 'li') {
-			elem.attribs.class = elem.attribs.class.replace(/(?:^| )margin-bottom-\S+/, '');
-		}
-	});
+	//$('div.module-info, div.module-tool, div.module-alert, div.module-attention').each((i, elem) => {
+	//	const elemRef = $(elem);
+	//	elemRef.removeClass('span-2 span-3 span-4 span-5 span-6');
+	//
+	//	const nextSiblingRef = elemRef.next();
+	//
+	//	if (nextSiblingRef.hasClass('clear')) {
+	//		nextSiblingRef.remove();
+	//	}
+	//
+	//	if (elemRef.parent().get(0) && elemRef.parent().get(0).tagName === 'li') {
+	//		elem.attribs.class = elem.attribs.class.replace(/(?:^| )margin-bottom-\S+/, '');
+	//	}
+	//});
 
 	// add list classes
 	// add 'lst-lwr-alph' and 'lst-lwr-rmn' to lvl 2 and 3 <ol>s, respectively
@@ -235,11 +280,22 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 		}
 	});
 
+	$('li').filter((i, li) => $(li).find('.span-1, .span-2, .span-3, .span-4, .span-5, .span-6').length > 0)
+		.each((i, li) => {
+			const $li = $(li);
+
+			if (/(?:^| )span-/.test($li.children().last().attr('class'))) {
+				$li.append('<div class="clear"></div>');
+			}
+		});
+
+	$('div[class*=border-span-]').each((i, brdr) => $(brdr).children().first().addClass('mrgn-tp-md'));
+
 	transformClasses($);
 
 	// misc formatting and tidying
 
-	// todo: if multiple mrgn classes, only keep the biggest one
+	// add margin to first child of "brdr-lft brdr-rght brdr-tp brdr-bttm"
 
 	// need to re-parse html for whatever reason
 	const $$ = cheerio.load($.html(), { decodeEntities: false });
@@ -254,9 +310,49 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 	});
 
 	// add margins to li children
-	$$('li > p, li > div, li img, li table')
-		.filter((i, el) => !$(el).hasClass('mrgn-tp-md') && !$(el).prev().hasClass('mrgn-bttm-0'))
+	$$('li > p, li > div, li img, li table').filter(
+		(i, el) => !$(el).hasClass('mrgn-tp-md')
+			&& !$(el).prev().hasClass('mrgn-bttm-0')
+			&& !$(el).hasClass('clearfix')
+	)
 		.addClass('mrgn-tp-md');
 
+	removeMultipleMargins($$);
+
 	return $$.html();
+}
+
+function removeMultipleMargins($) {
+	const keepLargestMarginUnlessZero = ($, side) => {
+		const mrgnPrefix = `mrgn-${side}-`;
+
+		const mrgn0 = mrgnPrefix + '0';
+		const mrgnSm = mrgnPrefix + 'sm';
+		const mrgnMd = mrgnPrefix + 'md';
+		const mrgnLg = mrgnPrefix + 'lg';
+
+		const $elems =
+			$(`.${mrgn0}.${mrgnSm}, .${mrgn0}.${mrgnMd}, .${mrgn0}.${mrgnLg}, .${mrgnSm}.${mrgnMd}, .${mrgnSm}.${mrgnLg}, .${mrgnMd}.${mrgnLg}`);
+
+		$elems.each((i, elem) => {
+			const $elem = $(elem);
+
+			if (new RegExp(`${mrgn0}`).test($elem.attr('class'))) {
+				$elem.removeClass(`${mrgnLg} ${mrgnMd} ${mrgnSm}`);
+			}
+
+			if (new RegExp(`${mrgnLg}`).test($elem.attr('class'))) {
+				$elem.removeClass(`${mrgnMd} ${mrgnSm}`);
+			}
+
+			if (new RegExp(`${mrgnMd}`).test($elem.attr('class'))) {
+				$elem.removeClass(mrgnSm);
+			}
+		})
+	};
+
+	keepLargestMarginUnlessZero($, 'tp');
+	keepLargestMarginUnlessZero($, 'rght');
+	keepLargestMarginUnlessZero($, 'bttm');
+	keepLargestMarginUnlessZero($, 'lft');
 }

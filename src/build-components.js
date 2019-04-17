@@ -1,4 +1,5 @@
 import { formatHtml } from './util';
+import cheerio from 'cheerio';
 
 export const buildNav = (navProps, lang, tomNumber) => {
 	const secMenuWords = lang === 'eng' ? 'Section menu' : 'Menu de section';
@@ -62,21 +63,33 @@ ${
 </section>`;
 };
 
-export const buildToc = (tocLinks, lang) => tocLinks.trim() ?
-	`\
+export const buildToc = (tocLinks, lang) => {
+	const $ = cheerio.load(tocLinks, { decodeEntities: false });
+
+	// manipulate as necessary
+	$('li:has([class*=col-md-])').each((i, li) => {
+		const $li = $(li);
+		const firstChild = $li.children().first();
+		firstChild.after('\r\n<div class="clearfix"></div>');
+		$li.children().removeClass('mrgn-tp-md');
+	});
+
+	 return tocLinks.trim() ?
+		`\
 <section class="panel panel-default">
 	<header class="panel-heading">
 		<h3 class="panel-title">${lang === 'eng' ? 'Table of contents' : 'Table des matières'}</h3>
 	</header>
 	<div class="panel-body">
 ${
-	formatHtml(tocLinks)
-		.split('\r\n')
-		.map((li) => `\t\t${li}`)
-		.join('\r\n')
-}
+			formatHtml($.html())
+				.split('\r\n')
+				.map((li) => `\t\t${li}`)
+				.join('\r\n')
+			}
 	</div>
 </section>` : '';
+};
 
 export const buildTOMTitleLink = (breadcrumbs) => {
 	const aElemRegex = /<a [\s\S]+?<\/a>/;
@@ -98,4 +111,14 @@ export const buildBreadcrumbs = (breadcrumbs, pageTitle, isHomepage) => {
 		return bcLines.join('\r\n');
 	}
 	return breadcrumbs + '\r\n\t\t\t\t\t' + `<li>${pageTitle}</li>`
+};
+
+export const buildAttachment = (attachment) => {
+
+	return attachment.text && attachment.uri
+		? `
+<a href="${attachment.uri}" class="btn btn-default pull-right">
+\t<span class="fa fa-download"></span> ${attachment.text}
+</a>
+` : '';
 };
