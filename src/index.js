@@ -38,7 +38,10 @@ async function main(inputDir = defaultDir, outputDir = defaultOutputDir, flags) 
 
 	// Options for the file iterator to use to include/exclude files/folders/extensions that match the regex
 	const opts = {
-		excludeDirs: new RegExp(`Draft|donezo|test|Verified|images|wet40${flags.exclude ? '|TOM' + flags.exclude.replace(/ /g, '|TOM') : ''}`, 'i'),
+		excludeDirs:
+			new RegExp(`Draft|donezo|test|Verified|images|wet40${
+				flags.exclude ? '|TOM' + flags.exclude.replace(/ /g, '|TOM') : ''
+			}`, 'i'),
 		includeExt: /\.html/
 	};
 
@@ -83,7 +86,7 @@ async function copyResources(outputDir) {
 
 		// Options for the file iterator to use to include/exclude files/folders/extensions that match the regex
 		const opts = {
-			includeDirs: new RegExp(`images|pdf|docs`, 'i'),
+			includeDirs: new RegExp(`images|pdf|docs|js`, 'i'),
 			includeExt: /\.(?!html)/
 		};
 

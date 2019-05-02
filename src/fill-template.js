@@ -3,18 +3,23 @@ import {
 	buildTOMTitleLink,
 	buildNav,
 	buildSecMenu,
-	buildBreadcrumbs, buildAttachment,
+	buildBreadcrumbs,
+	buildAttachment,
+	buildQuicksearchScriptTag,
 } from './build-components';
 
 export default function fillTemplate(docObj, wet4path) {
-	const toc = buildToc(docObj.toc, docObj.metadata.language);
+	const { metadata, tomNumber, hasQuicksearch } = docObj;
+	const toc = buildToc(docObj.toc, metadata.language);
 	const tomTitleLink = buildTOMTitleLink(docObj.breadcrumbs);
-	const nav = buildNav(docObj.nav, docObj.metadata.language, docObj.tomNumber);
-	const secMenu = buildSecMenu(docObj.secMenu, docObj.metadata.language, tomTitleLink, docObj.metadata.isHomepage);
-	const breadcrumbs = buildBreadcrumbs(docObj.breadcrumbs, docObj.pageTitle, docObj.metadata.isHomepage);
+	const topNav = buildNav(docObj.nav, metadata.language, tomNumber, hasQuicksearch, docObj.langFilename);
+	const bottomNav = buildNav(docObj.nav, metadata.language, tomNumber, false);
+	const secMenu = buildSecMenu(docObj.secMenu, metadata.language, tomTitleLink, metadata.isHomepage);
+	const breadcrumbs = buildBreadcrumbs(docObj.breadcrumbs, docObj.pageTitle, metadata.isHomepage);
 	const attachment = buildAttachment(docObj.attachment);
+	const quicksearchScriptTag = hasQuicksearch ? buildQuicksearchScriptTag(tomNumber, docObj.langFilename) : '';
 
-	if (docObj.metadata.language === 'eng') {
+	if (metadata.language === 'eng') {
 		return `<!DOCTYPE html>
 <!-- InstanceBegin template="file:///N|/irppd/manuals/Templates/wet40-manuals_secure-en.dwt" codeOutsideHTMLIsLocked="false" -->
 <!--[if lt IE 9]><html class="no-js lt-ie9" lang="en" dir="ltr"><![endif]-->
@@ -31,22 +36,22 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 <!-- InstanceEndEditable -->
 <meta content="width=device-width,initial-scale=1" name="viewport">
 	<!-- InstanceBeginEditable name="metadata" -->
-	<meta name="dcterms.title" content="${docObj.metadata.title}" /> 
-	<meta name="ManualHomePage" content="${docObj.metadata.isHomepage || ''}" />  
-	<meta name="ManualID" content="${docObj.metadata.manualId}" />
-	<meta name="ManualName" content="${docObj.metadata.manualName}" />
+	<meta name="dcterms.title" content="${metadata.title}" /> 
+	<meta name="ManualHomePage" content="${metadata.isHomepage || ''}" />  
+	<meta name="ManualID" content="${metadata.manualId}" />
+	<meta name="ManualName" content="${metadata.manualName}" />
 	<meta name="ManualGroupID" content="" />
 	<meta name="ManualGroupName" content="" />
-	<meta name="dc.description" content="${docObj.metadata.description}" />
-	<meta name="description" content="${docObj.metadata.description}" /> 
+	<meta name="dc.description" content="${metadata.description}" />
+	<meta name="description" content="${metadata.description}" /> 
 	<meta name="dc.subject" title="CRAintranet" content="" /> 
-	<meta name="keywords" content="${docObj.metadata.keywords}" />
-	<meta name="dc.creator" content="${docObj.metadata.creator}" />
-	<meta name="owner" content="${docObj.metadata.owner}" /> 
-	<meta name="dc.publisher" content="${docObj.metadata.publisher}" />
+	<meta name="keywords" content="${metadata.keywords}" />
+	<meta name="dc.creator" content="${metadata.creator}" />
+	<meta name="owner" content="${metadata.owner}" /> 
+	<meta name="dc.publisher" content="${metadata.publisher}" />
 	<meta name="dc.language" title="ISO639-2" content="eng" />
-	<meta name="dcterms.issued" title="W3CDTF" content="${docObj.metadata.issued}" /> 
-	<meta name="dcterms.modified" title="W3CDTF" content="${docObj.metadata.modified}" /> 
+	<meta name="dcterms.issued" title="W3CDTF" content="${metadata.issued}" /> 
+	<meta name="dcterms.modified" title="W3CDTF" content="${metadata.modified}" /> 
 	<meta name="dcterms.audience" title="CRAaudience" content="" /> 
 	<meta name="dc.type" title="gctype" content="guide" /> 
 	<meta name="dcterms.spatial" title="CRAgeonames" content="" /> 
@@ -145,11 +150,11 @@ ${breadcrumbs}
 <main role="main" property="mainContentOfPage" class="container">
 <div class="clearfix mrgn-bttm-lg"></div>
 <!-- InstanceBeginEditable name="Title" -->
-<h1 id="wb-cont" property="name" class="page-header${docObj.metadata.isHomepage ? ' wb-inv' : ''}">${docObj.pageTitle}</h1>
+<h1 id="wb-cont" property="name" class="page-header${metadata.isHomepage ? ' wb-inv' : ''}">${docObj.pageTitle}</h1>
 <!-- InstanceEndEditable -->
 
 <!-- InstanceBeginEditable name="navigation-top" -->
-${nav}
+${topNav}
 <!-- InstanceEndEditable -->
 
 <!-- InstanceBeginEditable name="Section menu" -->
@@ -170,7 +175,7 @@ ${docObj.content}
 <div class="mrgn-bttm-xl clearfix"></div>
 
 <!-- InstanceBeginEditable name="navigation-bottom" -->
-${nav}
+${bottomNav}
 <!-- InstanceEndEditable -->
 
 <div class="pull-left">
@@ -180,7 +185,7 @@ ${nav}
 		<dt>Last updated:&#32;</dt>
 		<dd>
 			<!-- InstanceBeginEditable name="date" -->
-			<time property="dateModified">${docObj.metadata.modified}</time>
+			<time property="dateModified">${metadata.modified}</time>
 			<!-- InstanceEndEditable -->	
 		</dd>
 	</dl>
@@ -213,12 +218,13 @@ ${nav}
 <script src="${wet4path}/js/ie8-wet-boew2.min.js"></script>
 <![endif]-->
 <script src="${wet4path}/js/theme.min.js"></script>
-<!-- InstanceBeginEditable name="js" -->
+<!-- InstanceBeginEditable name="js" -->\
+${quicksearchScriptTag}
 <!-- InstanceEndEditable -->
 </body>
 <!-- InstanceEnd -->
 </html>`;
-	} else if (docObj.metadata.language === 'fra') {
+	} else if (metadata.language === 'fra') {
 		return `<!DOCTYPE html>
 <!-- InstanceBegin template="/Templates/wet40-manuals_secure-fr.dwt" codeOutsideHTMLIsLocked="false" -->
 <!--[if lt IE 9]><html class="no-js lt-ie9" lang="fr" dir="ltr"><![endif]-->
@@ -235,22 +241,22 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 <!-- InstanceEndEditable -->
 <meta content="width=device-width,initial-scale=1" name="viewport">
 	<!-- InstanceBeginEditable name="metadata" -->
-	<meta name="dcterms.title" content="${docObj.metadata.title}" /> 
-	<meta name="ManualHomePage" content="${docObj.metadata.isHomepage || ''}" />  
-	<meta name="ManualID" content="${docObj.metadata.manualId}" />
-	<meta name="ManualName" content="${docObj.metadata.manualName}" />
+	<meta name="dcterms.title" content="${metadata.title}" /> 
+	<meta name="ManualHomePage" content="${metadata.isHomepage || ''}" />  
+	<meta name="ManualID" content="${metadata.manualId}" />
+	<meta name="ManualName" content="${metadata.manualName}" />
 	<meta name="ManualGroupID" content="" />
 	<meta name="ManualGroupName" content="" />
-	<meta name="dc.description" content="${docObj.metadata.description}" />
-	<meta name="description" content="${docObj.metadata.description}" /> 
+	<meta name="dc.description" content="${metadata.description}" />
+	<meta name="description" content="${metadata.description}" /> 
 	<meta name="dc.subject" title="CRAintranet" content="" /> 
-	<meta name="keywords" content="${docObj.metadata.keywords}" />
-	<meta name="dc.creator" content="${docObj.metadata.creator}" />
-	<meta name="owner" content="${docObj.metadata.owner}" /> 
-	<meta name="dc.publisher" content="${docObj.metadata.publisher}" />
+	<meta name="keywords" content="${metadata.keywords}" />
+	<meta name="dc.creator" content="${metadata.creator}" />
+	<meta name="owner" content="${metadata.owner}" /> 
+	<meta name="dc.publisher" content="${metadata.publisher}" />
 	<meta name="dc.language" title="ISO639-2" content="eng" />
-	<meta name="dcterms.issued" title="W3CDTF" content="${docObj.metadata.issued}" /> 
-	<meta name="dcterms.modified" title="W3CDTF" content="${docObj.metadata.modified}" /> 
+	<meta name="dcterms.issued" title="W3CDTF" content="${metadata.issued}" /> 
+	<meta name="dcterms.modified" title="W3CDTF" content="${metadata.modified}" /> 
 	<meta name="dcterms.audience" title="CRAaudience" content="" /> 
 	<meta name="dc.type" title="gctype" content="guide" /> 
 	<meta name="dcterms.spatial" title="CRAgeonames" content="" /> 
@@ -350,11 +356,11 @@ ${breadcrumbs}
 <div class="clearfix mrgn-bttm-lg"></div>
 
 <!-- InstanceBeginEditable name="Titre" -->
-<h1 id="wb-cont" property="name" class="page-header${docObj.metadata.isHomepage ? ' wb-inv' : ''}">${docObj.pageTitle}</h1>
+<h1 id="wb-cont" property="name" class="page-header${metadata.isHomepage ? ' wb-inv' : ''}">${docObj.pageTitle}</h1>
 <!-- InstanceEndEditable -->	
 
 <!-- InstanceBeginEditable name="navigation-top" -->
-${nav}
+${topNav}
 <!-- InstanceEndEditable -->
 
 <!-- InstanceBeginEditable name="Menu de section" -->
@@ -375,7 +381,7 @@ ${docObj.content}
 <div class="mrgn-bttm-xl clearfix"></div>
 
 <!-- InstanceBeginEditable name="navigation-bottom" -->
-${nav}
+${bottomNav}
 <!-- InstanceEndEditable -->
 
 <div class="pull-left">
@@ -385,7 +391,7 @@ ${nav}
 	<dt>Dernière mise à jour&#160;:&#32;</dt>
 	<dd>
 		<!-- InstanceBeginEditable name="date" -->
-		<time property="dateModified">${docObj.metadata.modified}</time>
+		<time property="dateModified">${metadata.modified}</time>
 		<!-- InstanceEndEditable -->  
 	</dd>
 </dl>
@@ -418,7 +424,8 @@ ${nav}
 <script src="${wet4path}/js/ie8-wet-boew2.min.js"></script>
 <![endif]-->
 <script src="${wet4path}/js/theme.min.js"></script>
-<!-- InstanceBeginEditable name="js" -->
+<!-- InstanceBeginEditable name="js" -->\
+${quicksearchScriptTag}
 <!-- InstanceEndEditable -->
 </body>
 <!-- InstanceEnd -->

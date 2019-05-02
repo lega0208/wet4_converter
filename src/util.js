@@ -1,5 +1,12 @@
 const beautifyHTML = require('js-beautify').html;
 
+export const pipe = (...functions) => args => functions.reduce((arg, fn) => fn(arg), args);
+export const indent =
+	(text, num = 1) => text
+		.split('\r\n')
+		.map((line) => Array(num).fill('\t').join('') + line)
+		.join('\r\n');
+
 const inlineElems = [
 	'a', 'abbr', 'area', 'audio', 'b', 'br', 'button', 'canvas', 'cite',
 	'code', 'data', 'datalist', 'del', 'em', 'embed', 'i', 'iframe',
@@ -12,13 +19,36 @@ export function moveNestedElemsToNewline(html) {
 	const re =
 		new RegExp(`(\\s*<li[^>]*?>.+?)(<(?!(?:${inlineElems.join('|')})(?: [^>]+)?>)[a-z]+?(?: [^>]+)?>)[ \t]*`, 'm');
 
-	html = html.split('\r\n').filter((line) => !!line.trim()).join('\r\n');
+	//html = html.split('\r\n').filter((line) => !!line.trim()).join('\r\n');
 
 	while (re.test(html)) {
 		html = html.replace(re, '$1\r\n$2');
 	}
 
 	return html;
+}
+
+function removeEmptyLinesIfNotInPre(html) {
+	let inPre;
+	const openPreRE = /<pre[ >]/;
+	const closePreRE = /<\/pre>/;
+	const lines = html.split('\r\n');
+
+	for (const [i, line] of lines.entries()) {
+		if (openPreRE.test(line)) {
+			inPre = true;
+		} else if (closePreRE.test(line)) {
+			inPre = false;
+		}
+
+		if (!inPre && !line.trim()) {
+			lines[i] = '{removed}';
+		}
+	}
+
+	return lines
+		.filter((line) => !/^{removed}$/.test(line))
+		.join('\r\n');
 }
 
 export function beautify(html) {
@@ -38,9 +68,6 @@ export function beautify(html) {
 	//	console.log(html);
 	//}
 
-	html = moveNestedElemsToNewline(html, inlineElems);
-
-	//return html;
 	return beautifyHTML(html, config);
 }
 
@@ -135,4 +162,14 @@ export function formatContent(html) {
 	return lines.filter((line) => !/^{removed}$/.test(line)).join('\r\n');
 }
 
-export const formatHtml = (html) => formatContent(beautify(replaceSpecChars(html)));
+export const formatHtml = (text, indents = 0) => {
+	const formattedhtml = pipe(
+		replaceSpecChars,
+		removeEmptyLinesIfNotInPre,
+		moveNestedElemsToNewline,
+		beautify,
+		formatContent,
+	)(text);
+
+	return !indents ? formattedhtml : indent(formattedhtml, indents);
+};

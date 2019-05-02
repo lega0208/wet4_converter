@@ -6,7 +6,7 @@ import applyWetTransforms from './wetTransforms';
 import { formatHtml } from './util';
 
 export default async function convertFile(filePath, inputDir, flags = {}) {
-	//console.log(filePath);
+	console.log(filePath);
 	// get data from file (string of file contents)
 	const data = await fs.readFile(filePath, 'utf-8');
 	// extract data to be plugged into the template

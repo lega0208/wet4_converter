@@ -10,7 +10,7 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 	doTOMTransforms(manualId, $, filename);
 
 	// fix what's new label
-	if (isHomepage) { // isHomepage is true when it's not????
+	if (isHomepage) {
 		const labelRef = $('strong.color-attention').first();
 		
 		if (labelRef.get(0)) {
@@ -20,6 +20,15 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 			console.log(`${filename} has no strong.color-attention`)
 		}
 	}
+
+	// move improperly nested elements into <li>s
+	$('ol > :not(li), ul > :not(li)').each((i, elem) => {
+		const $elem = $(elem);
+
+		if ($elem.prev('li').length > 0) {
+			$elem.appendTo($elem.prev());
+		}
+	});
 
 	// transform tabs
 	$('ul.tabs').each((i, tabTitles) => {
@@ -66,6 +75,7 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 	}
 
 	// transform notes
+	$('div.module-tool.span-6').removeClass('span-6');
 	$('div.module-note, div.module-info, div.module-alert, div.module-attention').each((i, elem) => {
 		const elemRef = $(elem);
 		elemRef.removeClass('span-2 span-3 span-4 span-5 span-6');
@@ -202,9 +212,9 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 
 	// add list classes
 	// add 'lst-lwr-alph' and 'lst-lwr-rmn' to lvl 2 and 3 <ol>s, respectively
-	$('li > ol').filter((i, elem) => $(elem).parentsUntil(':not(li, ol, ul)').length === 2)
+	$('li > ol').filter((i, elem) => $(elem).parentsUntil(':not(li, ol, ul)').filter(':not(div)').length === 2) // test for any bugs coming from filtering out divs
 		.addClass('lst-lwr-alph');
-	$('li li > ol').filter((i, elem) => $(elem).parentsUntil(':not(li, ol, ul)').length === 4)
+	$('li li > ol').filter((i, elem) => $(elem).parentsUntil(':not(li, ol, ul)').filter(':not(div)').length === 4)
 		.addClass('lst-lwr-rmn');
 
 	$('.row.start').each((i, elem) => (elem.attribs.class = elem.attribs.class.replace('row start', 'row-start')));
@@ -233,15 +243,20 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 	// add table classes
 	$('table').each((i, table) => $(table).addClass('table table-bordered'));
 	$('th').each((i, th) => {
-		const thRef = $(th);
-		const thClass = thRef.attr('class') || '';
+		const $th = $(th);
+		const thClass = $th.attr('class') || '';
 		if (!thClass.includes('background')) {
-			thRef.addClass('bg-primary');
+			$th.addClass('bg-primary');
 		}
 		if (!thClass.includes('align-center')) {
-			thRef.addClass('text-center');
+			$th.addClass('text-center');
 		}
 	});
+
+	//
+	$('td, th')
+		.filter((i, t) => $(t).children().last('p').length === 1)
+		.each((i, t) => $(t).children().last().addClass('margin-bottom-none'));
 
 	//$('.grid').each((i, elem) => {
 	//	const elemRef = $(elem);
@@ -300,21 +315,19 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 	// need to re-parse html for whatever reason
 	const $$ = cheerio.load($.html(), { decodeEntities: false });
 
-	// move improperly nested elements into <li>s
-	$$('ol > :not(li), ul > :not(li)').each((i, elem) => {
-		const $elem = $$(elem);
-
-		if ($elem.prev('li').length > 0) {
-			$elem.appendTo($elem.prev());
-		}
-	});
-
 	// add margins to li children
-	$$('li > p, li > div, li img, li table').filter(
-		(i, el) => !$(el).hasClass('mrgn-tp-md')
-			&& !$(el).prev().hasClass('mrgn-bttm-0')
-			&& !$(el).hasClass('clearfix')
-	)
+	$$('li > p, li > div, li img, li table').filter((i, el) => {
+		const $el = $(el);
+
+		// don't add margin to table if it has a "figure" label
+		if (el.tagName === 'table') {
+			if ($el.prev('p').length === 1 && /figure/i.test($el.prev().text()) || $el.children('label').length !== 0) {
+				return false;
+			}
+		}
+
+		return !/mrgn-tp-md|clearfix/.test(el.attribs.class) && !$(el).prev().hasClass('mrgn-bttm-0')
+	})
 		.addClass('mrgn-tp-md');
 
 	removeMultipleMargins($$);

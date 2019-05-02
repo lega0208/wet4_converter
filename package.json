@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest --noStackTrace",
-    "test-all": "jest --noStackTrace -- --all",
+    "test": "jest --noStackTrace --runInBand",
+    "test-all": "set TEST_ALL=true && jest --noStackTrace -- --all",
     "start": "node -r @babel/register ./src/index.js",
     "watch": "jest --watch",
     "build": "babel src -d build",

@@ -1,37 +1,39 @@
-//import fs from 'fs-extra';
 import cheerio from 'cheerio';
 import { resolve, basename } from 'path';
-import { readdirSync, readFile } from 'fs-extra';
-import { convertData } from '../scripts/cache-tom-data';
-import extractData from '../src/extract-data';
+//import { readdirSync, readJSONSync } from 'fs-extra';
+import { readdirSync, readFileSync } from 'fs';
 
-//import walkFiles from 'walk-asyncgen';
+import { convertData as convert } from './util';
 
 // shorthand functions
 const makeCheerio = (fileContents) => cheerio.load(fileContents, { decodeEntities: false });
 const absPath = (manual, name = '') => resolve(rootDir, manual, name);
 const liFormatRegex = /\s+(<li[^>]*?>.+<(?!br|strong)[a-z]+[^>]*?>) *$/im;
+const getCachedData = (tomName) => JSON.parse(readFileSync(resolve('./cache/', `${tomName}.json`), 'utf8'));
 
-//const baseDir = `Desktop\\convert_to_wet4\\TOM1915`;
-//const rootDir = resolve(process.env.USERPROFILE, baseDir); // making multiple variables in case I change the path a lot
-//const paths = readdirSync(rootDir).filter((filename) => /\.html/i.test(filename));
+const specificDir = '';
+const baseDir = `Desktop\\convert_to_wet4${specificDir ? '\\' + specificDir : ''}`;
+const rootDir = resolve(process.env.USERPROFILE, baseDir); // making multiple variables in case I change the path a lot
+const cachePath = resolve('./cache');
 
-//test.each(paths)('%s', async (filename) => {
-//	const filePath = resolve(rootDir, filename);
-//	const fileContent = await readFile(filePath, 'utf-8');
-//	const manualData = await convertData(extractData(fileContent), filePath);
-//	const $ = makeCheerio(manualData.content);
-//});
+const tomsToSkip = [
+	'SKIPPED_TOM_NUMBER'
+].map((name) => 'TOM' + name);
 
-describe.each(Object.keys(manuals.wet4))('%s', (manualName) => {
-	//const manualData = manuals.wet2[manualName];
-	const wet4Data = manuals.wet4[manualName];
+const getManualsList =
+	() => (readdirSync(process.env.TEST_ALL ? cachePath : rootDir))
+		.map((tomName) => tomName.replace('.json', ''))
+		.filter((name) => /TOM/.test(name) && !tomsToSkip.includes(name));
 
-	describe.each(Object.keys(wet4Data))('%s', (fileKey) => {
-		const fileData = wet4Data[fileKey];
-		const $ = makeCheerio(fileData.content);
+const manualsList = getManualsList();
+describe.each(manualsList)('%s', (manualName) => {
+	const manualData = getCachedData(manualName);
 
+	describe.each(Object.keys(manualData))('%s', (filePath) => {
 		test('Alert headers', async () => {
+			const fileData = manualData[filePath];
+			const convertedData = convert(fileData, filePath);
+			const $ = makeCheerio(convertedData.content);
 			const $alerts = $('.alert');
 
 			$alerts.each((i, alert) => {
@@ -48,10 +50,6 @@ describe.each(Object.keys(manuals.wet4))('%s', (manualName) => {
 					} else if (/(?:For(?: |&nbsp;))?Example|(?:Par(?: |&nbsp;))?Exemple/) {
 						expect(headerText.includes(':'));
 					}
-
-					//const badFormatRE =
-					//	/^(?:Note|Remarque)(?:\s*|&nbsp;)(?:#?\d+(?:\s*|&nbsp;)(?!\d).+|(?!(?:\s*|&nbsp;)#?\d+)(?!\d).+)/i;
-					//expect(badFormatRE.test(headerText), `Note header format is bad: ${headerText}`).toBeFalse();
 				});
 
 				const noteParas = notePs.not('.h3');
@@ -92,88 +90,3 @@ describe.each(Object.keys(manuals.wet4))('%s', (manualName) => {
 		//})
 	});
 });
-
-//describe('Testing div tables', () => {
-//	describe.each(Object.keys(manuals.wet2))('Manual %s', (manualName) => {
-//		const manualData = manuals.wet2[manualName];
-//
-//		describe.each(Object.keys(manualData))('File %s', (fileKey) => {
-//			const fileData = manualData[fileKey];
-//
-//			test('div tables', async () => {
-//				const $ = makeCheerio(fileData.content);
-//
-//				const spansSelector = '.span-2, .span-3, .span-4, .span-5, .span-6';
-//				const borderSpansSelector = '.border-span-1, .border-span-2, .border-span-3, .border-span-4, .border-span-5';
-//				const wrappers = $(spansSelector)
-//					.has(borderSpansSelector)
-//					.filter((i, wrapper) => $(wrapper).children(borderSpansSelector).length > 0);
-//
-//				wrappers.each((i, wrapper) => {
-//					const $w = $(wrapper);
-//					const nonBorderSpanElems = $w.children(`:not(${borderSpansSelector}, .border-span-6, .clear)`);
-//					expect(nonBorderSpanElems.length, 'Found non-border-spans in wrapper').toEqual(0);
-//				});
-//			});
-//		});
-//	});
-//});
-
-//describe('Testing conversion', () => {
-//	describe.each(Object.keys(manuals.wet4))('Manual %s:', (manualName) => {
-//		const manualPath = absPath(manualName);
-//		const manualData = manuals.wet4[manualName];
-//
-//		describe.each(Object.keys(manualData))('%s:', (filePath) => {
-//			try {
-//				//const fileContent = manualData[filePath].content;
-//				//const $ = makeCheerio(fileContent);
-//
-//				//test('fileContent is not empty', async () => {
-//				//	expect(!!fileContent, 'fileContent is truthy').toBeTrue();
-//				//});
-//				//
-//				//test('Notes don\'t have any errors', async () => {
-//				//	const notesRef = $('.alert.alert-info');
-//				//
-//				//	if (notesRef.length > 0) {
-//				//		const notePs = notesRef.find('p');
-//				//		const noteHeaders = notePs.filter('.h3');
-//				//		//const noteParagraphs = notePs.not('.h3');
-//				//
-//				//		noteHeaders.each((i, header) => {
-//				//			const headerText = $(header).text();
-//				//			expect(headerText.includes(':'), `Colon found in note header: ${headerText}`).toBe(false);
-//				//			const badFormatRE =
-//				//				/^(?:Note|Remarque)(?:\s*|&nbsp;)(?:#?\d+(?:\s*|&nbsp;)(?!\d).+|(?!(?:\s*|&nbsp;)#?\d+)(?!\d).+)/i;
-//				//			expect(badFormatRE.test(headerText), `Note header format is bad: ${headerText}`).toBeFalse();
-//				//		});
-//				//
-//				//		if (/^(?:Note|Remarque|Example|Exemple)/.test(notesRef.text())) {
-//				//			const notesWithHeaders = notesRef.has('p.h3'); // filter out notes that don't have a header
-//				//			expect(notesWithHeaders.length, `Note(s) with no headers in ${basename(filePath)}`)
-//				//				.toEqual(notesRef.length);
-//				//		}
-//				//	}
-//				//});
-//
-//				test('Breadcrumbs don\'t have any stray ">"s', async () => {
-//					const { breadcrumbs } = manualData[filePath];
-//
-//					if (filePath.includes('application_process_4032.12-e')) {
-//						console.log(breadcrumbs);
-//					}
-//					expect(/>|&#62;/.test(breadcrumbs), 'breadcrumbs have stray ">"s').toBeFalse();
-//				});
-//
-//				// add test for note <p> starting with whitespace/&nbsp;
-//				test('<p>s in notes don\'t start with whitespace/&nbsp;', async () => {
-//
-//				});
-//
-//			} catch (e) {
-//				console.error('AN ERROR OCCURRED READING THE FILE PROBABLY');
-//			}
-//		});
-//	});
-//});

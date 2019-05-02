@@ -1,8 +1,4 @@
 {
-	"presets": [
-		["@babel/env", {
-			"targets": { "node": "current" }
-		}]
-	],
-	"ignore": ["node_modules"]
+  "plugins": ["@babel/plugin-transform-modules-commonjs"],
+  "ignore": ["node_modules"]
 }

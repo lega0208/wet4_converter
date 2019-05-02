@@ -40,7 +40,7 @@ export default function transformClasses($) {
 		'margin-bottom-xlarge': 'mrgn-bttm-xl',
 		'margin-top-none': 'mrgn-tp-0',
 		'margin-top-small': 'mrgn-tp-sm',
-		'margin-top-medium': 'mrgn-tp-sm',
+		'margin-top-medium': 'mrgn-tp-md',
 		'margin-top-large': 'mrgn-tp-lg',
 		'margin-top-xlarge': 'mrgn-tp-xl',
 		'margin-right-none': 'mrgn-rght-0',
