@@ -34,12 +34,14 @@ commander
 	})
 	.parse(process.argv);
 
-async function main(inputDir = defaultDir, outputDir = defaultOutputDir, flags) {
+async function main(inputDir, outputDir, flags) {
+	outputDir = inputDir ? resolve(defaultOutputDir, `TOM${inputDir}`) : defaultOutputDir;
+	inputDir = inputDir ? resolve(defaultDir, `TOM${inputDir}`) : defaultDir;
 
 	// Options for the file iterator to use to include/exclude files/folders/extensions that match the regex
 	const opts = {
 		excludeDirs:
-			new RegExp(`Draft|donezo|test|Verified|images|wet40${
+			new RegExp(`Draft|donezo|test|Verified|images|wet40|old|moved in 4092${
 				flags.exclude ? '|TOM' + flags.exclude.replace(/ /g, '|TOM') : ''
 			}`, 'i'),
 		includeExt: /\.html/
@@ -65,9 +67,11 @@ async function main(inputDir = defaultDir, outputDir = defaultOutputDir, flags) 
 				fileCount++;
 			}
 		}
-		if (!flags.dry) await copyResources(outputDir);
+		if (!flags.dry) await copyResources(inputDir, outputDir);
 	} catch (e) {
 		console.error(e);
+		console.error(`Input path: ${inputDir}`);
+		console.error(`Output path: ${outputDir}`);
 	}
 
 	// End time
@@ -78,11 +82,12 @@ async function main(inputDir = defaultDir, outputDir = defaultOutputDir, flags) 
 	console.log(`${fileCount} files were output to ${resolve(outputDir)} in ${elapsedTime} seconds`)
 }
 
-async function copyResources(outputDir) {
+async function copyResources(inputDir, outputDir) {
 	try {
-		const rootDir = resolve(process.env.USERPROFILE, `Desktop\\convert_to_wet4`); // making multiple variables in case I change the path a lot
-		const manualNames = (await fs.readdir(rootDir)).filter((name) => name.includes('TOM'));
-		const manualPaths = manualNames.map((manualName) => resolve(rootDir, manualName));
+		const manualNames = (await fs.readdir(inputDir)).filter((name) => name.includes('TOM'));
+		const manualPaths = basename(inputDir).startsWith('TOM')
+			? [ inputDir ]
+			: manualNames.map((manualName) => resolve(inputDir, manualName));
 
 		// Options for the file iterator to use to include/exclude files/folders/extensions that match the regex
 		const opts = {
@@ -95,7 +100,7 @@ async function copyResources(outputDir) {
 
 			for await (const filePath of iter) {
 				//console.log(`Copying ${basename(filePath)}`);
-				fs.copy(filePath, filePath.replace(rootDir, outputDir));
+				fs.copy(filePath, filePath.replace(inputDir, outputDir));
 			}
 		}
 	} catch (e) {

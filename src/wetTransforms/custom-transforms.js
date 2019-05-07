@@ -34,6 +34,7 @@ const tomTransforms = {
 			$mod.addClass('col-md-8');
 			$mod.after('<div class="clearfix"/>');
 		}
+		transformSteps($);
 	},
 	TOM9850: ($, filename) => {
 		if (filename.includes('tpc_5')) {

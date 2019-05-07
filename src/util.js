@@ -54,7 +54,7 @@ function removeEmptyLinesIfNotInPre(html) {
 export function beautify(html) {
 	const config = {
 		indent_size: 2,
-		indent_char: '  ',
+		indent_char: '\t',
 		indent_with_tabs: true,
 		eol: '\r\n',
 		unescape_strings: true,
@@ -68,7 +68,7 @@ export function beautify(html) {
 	//	console.log(html);
 	//}
 
-	return beautifyHTML(html, config);
+	return beautifyHTML(html.trim(), config);
 }
 
 export function replaceSpecChars(html) {

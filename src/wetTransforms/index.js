@@ -30,6 +30,9 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 		}
 	});
 
+	// add <br/> before each pre.mainframe, or else they end up inline
+	$('pre.mainframe').before($('<br/>\r\n'));
+
 	// transform tabs
 	$('ul.tabs').each((i, tabTitles) => {
 		const tabTitlesRef = $(tabTitles);
@@ -100,7 +103,8 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 		const headerEndRegex = '([^:\\r\\n\\d]*?)(?:&nbsp;)?(:|</strong>)';
 		const headerRegex = new RegExp(`${notePStartRegex}${headerStringsRegex}${headerEndRegex}`, 'gi');
 
-		const convertedContent = noteContent.replace(/<\/strong>(\s*|&nbsp;)<strong>/g, '$1')
+		const convertedContent = noteContent
+			.replace(/<\/strong>(\s*|&nbsp;)<strong>/g, '$1')
 			.replace(headerRegex, '<h3$1>$2$3</h3>\r\n<p><strong>$4$5')
 			.trim()
 			.replace(/(<h3[^>]*>.+?<\/h3>\s*<p[^>]*>)\s*(?:&nbsp;)?<strong>(?:\s+|&nbsp;)?\s*:\s*(?:&nbsp;)?\s*/g, '$1<strong>')
@@ -110,17 +114,25 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 
 		elemRef.html(convertedContent);
 
-		elemRef.find('h3').each((i, header) => {
-			header.tagName = 'p';
-			$(header).addClass('h3');
-		});
+		elemRef
+			.find('h3')
+			.each((i, header) => {
+				header.tagName = 'p';
+				$(header).addClass('h3');
+			});
 
-		elemRef.find('strong').filter((i, strong) => {
-			const text = $(strong).text().trim();
-			return !text || /^&nbsp;$/.test(text);
-		}).remove();
+		elemRef
+			.find('strong')
+			.filter((i, strong) => {
+				const text = $(strong).text().trim();
+				return !text || /^&nbsp;$/.test(text);
+			})
+			.remove();
 
-		elemRef.find('p').filter((i, p) => !$(p).html()).remove();
+		elemRef
+			.find('p')
+			.filter((i, p) => !$(p).html())
+			.remove();
 
 		if (elemRef.children('p.h3').length > 0) {
 			const header = $(elemRef.children('p.h3').first());
@@ -194,22 +206,6 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 		}
 	});
 
-	// remove spans and clears from other modules, fix bottom margins if nested in a list
-	//$('div.module-info, div.module-tool, div.module-alert, div.module-attention').each((i, elem) => {
-	//	const elemRef = $(elem);
-	//	elemRef.removeClass('span-2 span-3 span-4 span-5 span-6');
-	//
-	//	const nextSiblingRef = elemRef.next();
-	//
-	//	if (nextSiblingRef.hasClass('clear')) {
-	//		nextSiblingRef.remove();
-	//	}
-	//
-	//	if (elemRef.parent().get(0) && elemRef.parent().get(0).tagName === 'li') {
-	//		elem.attribs.class = elem.attribs.class.replace(/(?:^| )margin-bottom-\S+/, '');
-	//	}
-	//});
-
 	// add list classes
 	// add 'lst-lwr-alph' and 'lst-lwr-rmn' to lvl 2 and 3 <ol>s, respectively
 	$('li > ol').filter((i, elem) => $(elem).parentsUntil(':not(li, ol, ul)').filter(':not(div)').length === 2) // test for any bugs coming from filtering out divs
@@ -257,23 +253,6 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 	$('td, th')
 		.filter((i, t) => $(t).children().last('p').length === 1)
 		.each((i, t) => $(t).children().last().addClass('margin-bottom-none'));
-
-	//$('.grid').each((i, elem) => {
-	//	const elemRef = $(elem);
-	//
-	//	elemRef.attr('class', 'container mrgn-tp-md mrgn-bttm-md');
-	//	const rowStartRefs = elemRef.children('.row-start');
-	//
-	//	rowStartRefs.each((i, rowStart) => {
-	//		const rowStartRef = $(rowStart);
-	//		const restOfRow = rowStartRefs.get(i + 1) ? rowStartRef.nextUntil(rowStartRefs.get(i + 1)) : rowStartRef.nextAll();
-	//		const rowElem = $('<div class="row" />');
-	//		rowStartRef.wrap(rowElem);
-	//		rowStartRef.removeClass('row-start');
-	//		restOfRow.removeClass('row-end');
-	//		restOfRow.appendTo(rowElem);
-	//	});
-	//});
 
 	// clean up imgs - remove width/height attribs, unwrap from <p>s
 	$('img').each((i, img) => {

@@ -1,34 +1,37 @@
 
 export default ($) => {
-	$('.span-6')
-		.filter((i, el) => /Step\s+\d/i.test($(el).text()))
-		.each((i, el) => {
-			const $el = $(el);
+	const $steps =
+		$('.span-6')
+			.filter(':not(.module-note)')
+			.filter((i, el) => /(?:Step|(?:&Eacute;|É)tape)\s+\d/i.test($(el).text()));
 
-			// get the "Step"'s id
-			const idElems = $el.find('[id]');
+	$steps.each((i, el) => {
+		const $el = $(el);
 
-			if (idElems.length > 1) {
-				console.log('wowo, multiple ids in a single "Step"!!');
-				idElems.each((i, idEl) => console.log(idEl.attribs.id));
-			} else if (idElems.length === 0) {
-				console.log('no id????');
-			}
-			const id = idElems.first().attr('id');
+		// get the "Step"'s id
+		const idElems = $el.find('[id]');
 
-			const stepSpan = $el.children('.span-1');
+		if (idElems.length > 1) {
+			console.log('wowo, multiple ids in a single "Step"!!');
+			idElems.each((i, idEl) => console.log(idEl.attribs.id));
+		} else if (idElems.length === 0 && !/(?:Step|(?:&Eacute;|É)tape)\s+1/i.test($(el).text())) {
+			console.log('no id????');
+		}
+		const id = idElems.first().attr('id');
 
-			if (stepSpan.length > 1) {
-				console.log('More than 1 span-1?');
-			} else if (stepSpan.length === 0) {
-				console.log('no span-1?');
-			}
+		const stepSpan = $el.children('.span-1');
 
-			const title = stepSpan.text().trim() || 'Step X';
+		if (stepSpan.length > 1) {
+			console.log('More than 1 span-1?');
+		} else if (stepSpan.length === 0) {
+			console.log('no span-1?');
+		}
 
-			const content = $el.children(':not(.span-1.background-accent)').html().trim();
+		const title = stepSpan.text().trim() || 'Step X';
 
-			const stepHtml = `\
+		const content = $el.children(':not(.span-1.background-accent)').html().trim();
+
+		const stepHtml = $(`\
 <div id="${id}" class="panel panel-primary mrgn-bttm-sm">
 	<div class="panel-heading">
 		<p class="lead mrgn-bttm-0">${title}</p>
@@ -40,7 +43,9 @@ export default ($) => {
 		<div class="clearfix"></div>
 	</div>
 </div>
-`;
-			$el.replaceWith($(stepHtml));
-		});
+`);
+		if ($el.next('.clear').length === 1) $el.next().remove();
+
+		$el.replaceWith(stepHtml);
+	});
 }
