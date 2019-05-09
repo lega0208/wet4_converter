@@ -31,7 +31,7 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 	});
 
 	// add <br/> before each pre.mainframe, or else they end up inline
-	$('pre.mainframe').before($('<br/>\r\n'));
+	$('li > pre.mainframe').before($('<br/>\r\n'));
 
 	// transform tabs
 	$('ul.tabs').each((i, tabTitles) => {
