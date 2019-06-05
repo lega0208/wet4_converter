@@ -13,16 +13,17 @@ const selectedToms = process.argv.slice(2).map((tomNum) => `TOM${tomNum}`);
 			const tomPath = path.resolve(tomsPath, tom);
 			const outputPath = path.resolve(tomsOutputPath, tom);
 
-			copyTasks.push(fs.copy(tomPath, outputPath));
-			console.log(`Successfully got a fresh copy of ${tom}`);
-			console.log(`Output to ${outputPath}`);
+			copyTasks.push(
+				fs.copy(tomPath, outputPath).then(() => console.log(`Successfully got a fresh copy of ${tom}\nOutput to ${outputPath}`))
+			);
+			
 		} catch (e) {
-			console.error('Holy cannoli, an error! :');
+			console.error('Uh oh, an error occurred:');
 			console.error(e);
 		}
 	}
 	try {
-		await Promise.all(copyTasks);
+		return await Promise.all(copyTasks);
 	} catch (e) {
 		console.error('Error in Promise.all()');
 		console.error(e);

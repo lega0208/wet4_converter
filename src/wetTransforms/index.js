@@ -1,7 +1,7 @@
 ﻿import cheerio from 'cheerio';
 import transformClasses from './transformClasses';
 import convertDivTables from './div-tables';
-import { doTOMTransforms } from './custom-transforms';
+import { doTOMTransforms, doPostTransforms } from './custom-transforms';
 
 export default function applyWetTransforms(html, filename, isHomepage, manualId) {
 	const $ = cheerio.load(html, { decodeEntities: false });
@@ -231,10 +231,13 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 					divRef.addClass('panel panel-default panel-body brdr-rds-0 mrgn-bttm-0');
 				}
 			});
-		tableRef.find('.row-start, .row-end').each((i, elem) => $(elem).removeClass('row-start').removeClass('row-end'));
+
+		tableRef
+			.find('.row-start, .row-end')
+			.each((i, elem) => $(elem).removeClass('row-start').removeClass('row-end'));
 	});
 
-	convertDivTables($);
+	convertDivTables($, filename);
 
 	// add table classes
 	$('table').each((i, table) => $(table).addClass('table table-bordered'));
@@ -310,6 +313,7 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 		.addClass('mrgn-tp-md');
 
 	removeMultipleMargins($$);
+	doPostTransforms(manualId, $$, filename);
 
 	return $$.html();
 }

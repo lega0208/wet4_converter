@@ -19,8 +19,9 @@ export default async function convertFile(filePath, inputDir, flags = {}) {
 	//	EOL: '\r\n'
 	//});
 
+
 	// transform html into wet4
-	docData.toc = await applyWetTransforms(docData.toc, basename(filePath), isHomepage, manualId);
+	docData.toc = docData.toc ? await applyWetTransforms(docData.toc, basename(filePath), isHomepage, manualId) : '';
 	docData.content = formatHtml(await applyWetTransforms(docData.content, basename(filePath), isHomepage, manualId));
 
 	// set resource (wet40 folder) path based on if infozone flag was passed

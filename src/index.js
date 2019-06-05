@@ -91,7 +91,7 @@ async function copyResources(inputDir, outputDir) {
 
 		// Options for the file iterator to use to include/exclude files/folders/extensions that match the regex
 		const opts = {
-			includeDirs: new RegExp(`images|pdf|docs|js`, 'i'),
+			includeDirs: new RegExp(`images?|pdf|docs|js`, 'i'),
 			includeExt: /\.(?!html)/
 		};
 

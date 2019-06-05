@@ -1,3 +1,5 @@
+import steps from '../steps';
+
 export default ($, filename) => {
 	const divTableFiles = [
 		'preve_4031.3',
@@ -162,5 +164,9 @@ export default ($, filename) => {
 		});
 		$('div.span-6, div.span-3, div.clear').remove();
 		$('table').find('.cn-invisible').remove()
+	}
+	
+	if (/^step\d{1,2}_4031\.5/.test(filename)) {
+		steps($);
 	}
 }

@@ -1,5 +1,5 @@
 
-export default function convertDivTables($) {
+export default function convertDivTables($, filename) {
 	const spansSelector = '.span-2, .span-3, .span-4, .span-5, .span-6';
 	const borderSpansSelector = '.border-span-1, .border-span-2, .border-span-3, .border-span-4, .border-span-5';
 	const getSpanNum = ($elem) => Number($elem.attr('class').replace(/.*(?:border-)?span-(\d).*/, '$1'));
@@ -72,6 +72,11 @@ export default function convertDivTables($) {
 			$table.append('<tr/>');
 			const row = $table.children().last();
 
+			if (filename.includes('9914_14_')) {
+				console.log('Before iterating children:');
+				console.log(`table innerHtml:\n${$table.html()}`);
+			}
+
 			$w.children().each((i, cell) => {
 				const $c = $(cell);
 
@@ -82,11 +87,18 @@ export default function convertDivTables($) {
 					row.append(`<th class="bg-primary text-center">${header.html()}</th>`);
 					header.remove();
 
-					if (!row.next().length)
+					if (!row.next().length && !!$c.html().trim())
 						row.after(`<tr/>`);
-					row.next().append(`<td>${$c.html()}</td>`);
-				} else {
+
+					if (!!$c.html().trim())
+						row.next().append(`<td>${$c.html()}</td>`);
+				} else if (!!$c.html().trim()) {
 					row.append(`<td>${$c.html()}</td>`);
+				}
+
+				if (filename.includes('9914_14_')) {
+					console.log(`child innerHtml:\n${$c.html()}`);
+					console.log(`table innerHtml:\n${$table.html()}`);
 				}
 
 			});

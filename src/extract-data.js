@@ -51,7 +51,7 @@ const extractMetadata = ($, filepath) => {
 
 	if (/-e\.html/.test(filepath)) {
 		metadata.language = 'eng';
-	} else if (/-f\.html/.test(filepath)) {
+	} else if (/-f\s*\.html/.test(filepath)) {
 		metadata.language = 'fra';
 	}
 
@@ -127,7 +127,7 @@ export default function extractData(fileContents, filePath) {
 
 	const tomTitle = breadcrumbs.trim().split(`\r\n`)[0];
 
-	const tomNumber = /(?:TOM|MOI)(?:\s*|&nbsp;)([\d().&amp;]+)/.exec(
+	const tomNumber = /(?:TOM|MOI)(?:\s*|&nbsp;)((?!&)[\d().&amp;]+)/.exec(
 		tomTitle.replace(/<li><a[^>]+?>(.+?)<\/a><\/li>/, '$1')
 						.replace(/<abbr[^>]+?>(.+?)<\/abbr>/g, '$1')
 	)[1];

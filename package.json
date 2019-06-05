@@ -10,7 +10,9 @@
     "watch": "jest --watch",
     "build": "babel src -d build",
     "cache": "node -r @babel/register ./scripts/cache-tom-data.js",
-    "get-fresh": "node ./scripts/get-fresh.js"
+    "get-fresh": "node ./scripts/get-fresh.js",
+		"convert-fresh": "node ./scripts/convert-fresh.js",
+		"publish": "node ./scripts/publish.js"
   },
   "author": "",
   "license": "ISC",
