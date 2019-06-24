@@ -165,7 +165,7 @@ export default function extractData(fileContents, filePath) {
 		attachment.text = attachmentParent.html().replace(/(.*?)<a[^>]+?>(.+?)<\/a>(.*?)/, '$1$2$3');
 	}
 
-	const hasQuicksearch = ($('#rejectsearch-form, #ecsearch-form').length > 0);
+	const hasQuicksearch = ($('#rejectsearch-form, #ecsearch-form, #fieldcodesearch-form').length > 0);
 
 	return {
 		title: replaceSpecChars(title),

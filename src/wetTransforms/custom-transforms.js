@@ -25,6 +25,14 @@ const tomTransforms = {
 	TOM1921: ($) => $('table.indent-large, table.indent-xlarge').removeClass('indent-large indent-xlarge'),
 	TOM4031,
 	TOM4033: ($) => transformFootnotes($),
+	TOM40921: ($, filename) => {
+		if (filename.includes('exhibit_a')) {
+			console.log('exhibit_a');
+			const $mod = $('.module-tool');
+			$mod.addClass('col-md-8');
+			$mod.after('<div class="clearfix"/>');
+		}
+	},
 	TOM409231: ($, filename) => {
 		if (filename.includes('homepage')) {
 			const $mod = $('.module-tool');

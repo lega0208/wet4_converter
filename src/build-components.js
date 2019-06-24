@@ -8,13 +8,20 @@ export const buildQuicksearchScriptTag = (tomNumber, langFilename) => {
 			? 'eclist_4092.31'
 			: tomNumber === '4092.32'
 				? 'eclist_4092.32'
-				: console.error('invalid tomNumber for quicksearch in ' + langFilename);
+				: tomNumber === '4092.1'
+					? 'fieldcodesearch_40921'
+					: console.error('invalid tomNumber for quicksearch in ' + langFilename);
 
 	return `\r\n<script src="js/${filename}.js"></script>`;
 };
 
 const buildQuicksearchNav = (lang, tomNumber, secMenu, navButtons, langFilename) => {
-	const type = tomNumber === '9850' ? 'reject' : 'ec';
+	const type =
+		tomNumber === '4092.1'
+			? 'fieldcode'
+			: tomNumber === '9850'
+				? 'reject'
+				: 'ec';
 	const buttonText = lang === 'eng' ? 'Search' : 'Recherche';
 	let title;
 	let labelText;
@@ -44,6 +51,18 @@ const buildQuicksearchNav = (lang, tomNumber, secMenu, navButtons, langFilename)
 		labelText = 'Inscrivez un <abbr title="numéro">no.</abbr> de Rejet';
 		placeholderText = 'Inscrivez un no. de Rejet';
 		errorText = 'Pas un <abbr title="numéro">no.</abbr> de Rejet valide';
+	}
+	// if fieldcode:
+	else if (lang === 'eng' && type === 'fieldcode') {
+		title = 'Field code quick search';
+		labelText = 'Enter Field code';
+		placeholderText = 'Enter Field code';
+		errorText = 'Not a valid Field code';
+	} else if (lang === 'fra' && type === 'fieldcode') {
+		title = 'Recherche rapide de code de zone';
+		labelText = 'Inscrivez un code de zone';
+		placeholderText = 'Inscrivez un code de zone';
+		errorText = 'Pas un code de zone valide';
 	}
 
 	return `\
