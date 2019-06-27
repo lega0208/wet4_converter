@@ -135,17 +135,17 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 			.remove();
 
 		if (elemRef.children('p.h3').length > 0) {
-			const header = $(elemRef.children('p.h3').first());
+			//const header = $(elemRef.children('p.h3').first());
 
 			// add colon to alerts that should have one
-			if (/For(?:\s|&nbsp;)example/i.test(header.text())) {
-				header.html(header.html() + ':');
-			} else if (/Par(?:\s|&nbsp;)exemple/i.test(header.text())) {
-				header.html(header.html() + ' :');
-			}
+			//if (/For(?:\s|&nbsp;)example/i.test(header.text())) {
+			//	header.html(header.html() + ':');
+			//} else if (/Par(?:\s|&nbsp;)exemple/i.test(header.text())) {
+			//	header.html(header.html() + ' :');
+			//}
 
 			const firstPara = $(elemRef.children().get(1));
-			let trimmedPara = firstPara.html().replace(/^\s*(?:&nbsp;)?\s*/, '');
+			let trimmedPara = firstPara.html().replace(/^\s*(?:&nbsp;)?,?\s*/, '');
 			firstPara.html(trimmedPara);
 
 			if (/^(?!\r?\n)\s/.test(firstPara.text())) {

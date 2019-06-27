@@ -17,6 +17,10 @@ const tomTransforms = {
 		});
 		transformFootnotes($);
 	},
+	TOM1913: ($) => {
+		transformSteps($);
+		$('#undefined').removeAttr('id');
+	},
 	TOM1940: ($, filename) => {
 		if (filename.includes('exhibita')) {
 			$('.indent-large').removeClass('indent-large');
@@ -25,6 +29,68 @@ const tomTransforms = {
 	TOM1921: ($) => $('table.indent-large, table.indent-xlarge').removeClass('indent-large indent-xlarge'),
 	TOM4031,
 	TOM4033: ($) => transformFootnotes($),
+	TOM404650: ($, filename) => {
+		if (filename.includes('sec116_4046.(50)4')) {
+			const divs = $('.equalize-span-6');
+			divs.addClass('equalize span-6');
+			divs.removeClass('equalize-span-6');
+		}
+
+		if (filename.includes('sec212_4046.(50)5')
+			|| filename.includes('sec216_4046.(50)6')
+			|| filename.includes('sec217_4046.(50)7')) {
+			const span4Tables = $('.equalize-span-4');
+			span4Tables.addClass('equalize span-4');
+			span4Tables.removeClass('equalize-span-4');
+
+			const span5Tables = $('.equalize-span-5');
+			span5Tables.addClass('equalize span-5');
+			span5Tables.removeClass('equalize-span-5');
+
+			const pdfButtons = $('a[href*=pdf]');
+
+			pdfButtons.each((i, pdfBtn) => {
+				const $pdfBtn = $(pdfBtn);
+				$pdfBtn.addClass('btn btn-default');
+				$pdfBtn.html(`<span class="fa fa-download"></span> ${$pdfBtn.html()}`);
+				$pdfBtn.parent().parent().replaceWith($pdfBtn);
+			});
+		}
+
+		if (filename.includes('ded_4046.(50)10')) {
+			const pdfButtons = $('a[href*=pdf]');
+
+			pdfButtons.each((i, pdfBtn) => {
+				const $pdfBtn = $(pdfBtn);
+				$pdfBtn.addClass('btn btn-default');
+				$pdfBtn.html(`<span class="fa fa-download"></span> ${$pdfBtn.html()}`);
+				$pdfBtn.parent().parent().replaceWith($pdfBtn);
+			});
+		}
+
+		transformSteps($);
+	},
+	TOM4082: ($, filename) => {
+		if (filename.includes('4082_5-procident')) {
+			transformSteps($);
+		}
+	},
+	TOM4092: ($, filename) => {
+		if (filename.includes('exhibitB_4092NR')) {
+			$('.background-light').each((i, el) => {
+				const $el = $(el);
+				$el.removeClass('background-light');
+				$el.find('.align-center').each((i, p) => {
+					const $p = $(p);
+					const lastP = $p.nextAll().length === 0 ? $p : $p.nextAll().last();
+					lastP.addClass('mrgn-bttm-0');
+				});
+				$el.html(`<div class="bg-info">${$el.html()}</div>`);
+			});
+		}
+
+		transformSteps($);
+	},
 	TOM40921: ($, filename) => {
 		if (filename.includes('exhibit_a')) {
 			console.log('exhibit_a');
@@ -49,6 +115,17 @@ const tomTransforms = {
 		}
 		transformSteps($);
 	},
+	TOM9816: ($, filename) => {
+		if (filename.includes('asls_98(16)')) {
+			$('.module-attention > ul > li:has(strong)').each((i, li) => {
+				const $li = $(li);
+				const note = $li.parent().parent();
+				note.prepend(`<p>${$li.html()}</p>`);
+				$li.parent().remove();
+			});
+		}
+		transformSteps($);
+	},
 	TOM9850: ($, filename) => {
 		if (filename.includes('tpc_5')) {
 			const $mod = $('.module-tool');
@@ -56,9 +133,14 @@ const tomTransforms = {
 			$mod.after('<div class="clearfix"/>');
 		}
 	},
-	TOM9970: ($) => {
-		transformSteps($);
-		transformFootnotes($); // ???
+	TOM9970: ($, filename) => {
+		if (filename.includes('overview_9971')) {
+			transformSteps($);
+			$('[id=undefined]').removeAttr('id');
+		} else if (filename.includes('correspondence_9976')) {
+			transformSteps($);
+			transformFootnotes($);
+		}
 	},
 };
 
@@ -91,7 +173,28 @@ const postTransforms = {
 			
 			$table.remove();
 		}
-	}
+	},
+	TOM4092: ($, filename) => {
+		if (filename.includes('exhibitB_4092NR')) {
+			const div = $('div.bg-info');
+			div.parent().addClass('bg-info');
+			div.each((i, div) => $(div).replaceWith($(div).html()));
+		}
+	},
+	TOM404650: ($, filename) => {
+		if (filename.includes('sec217_4046.(50)7')) {
+			const table = $('table').first();
+			const restOfTable = table.nextAll();
+			restOfTable.filter((i, el) => el.tagName === 'div' && el.attribs.class.includes('clear')).remove();
+			restOfTable.each((i, thisTable) => {
+				const $table = $(thisTable);
+				$table.find('tr').appendTo(table);
+			});
+			restOfTable.remove();
+			table.find('.bg-primary').removeClass('bg-primary');
+			table.find('th').each((i, th) => th.tagName = 'td');
+		}
+	},
 };
 
 export const doPostTransforms =
