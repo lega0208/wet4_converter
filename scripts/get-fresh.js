@@ -1,11 +1,12 @@
 const fs = require('fs-extra');
 const path = require('path');
+const constants = require('../src/constants');
 
-const tomsPath = `\\\\omega\\natdfs\\Services\\Central_storage\\Testing_ABSB_Secure\\IND\\`;
-const tomsOutputPath = path.resolve(`${process.env.USERPROFILE}`, 'Desktop', 'convert_to_wet4');
+const tomsPath = constants.tomsTestingDir;
+const tomsOutputPath = constants.conversionInputDir;
 const selectedToms = process.argv.slice(2).map((tomNum) => `TOM${tomNum}`);
 
-(async function() {
+async function getFresh() {
 	const copyTasks = [];
 
 	for (const tom of selectedToms) {
@@ -16,7 +17,7 @@ const selectedToms = process.argv.slice(2).map((tomNum) => `TOM${tomNum}`);
 			copyTasks.push(
 				fs.copy(tomPath, outputPath).then(() => console.log(`Successfully got a fresh copy of ${tom}\nOutput to ${outputPath}`))
 			);
-			
+
 		} catch (e) {
 			console.error('Uh oh, an error occurred:');
 			console.error(e);
@@ -28,4 +29,6 @@ const selectedToms = process.argv.slice(2).map((tomNum) => `TOM${tomNum}`);
 		console.error('Error in Promise.all()');
 		console.error(e);
 	}
-})().then(() => console.log('donezo'));
+}
+
+getFresh().then(() => console.log('donezo'));

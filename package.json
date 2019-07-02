@@ -10,7 +10,7 @@
     "build": "babel src -d build",
     "cache": "node -r @babel/register ./scripts/cache-tom-data.js",
     "clear": "node ./scripts/clear.js",
-    "convert-fresh": "npm run clear && node ./scripts/convert-fresh.js",
+    "convert-fresh": "node ./scripts/convert-fresh.js",
     "get-fresh": "node ./scripts/get-fresh.js",
     "publish": "node ./scripts/publish.js",
     "watch": "jest --watch"

@@ -1,12 +1,15 @@
 const fs = require('fs-extra');
 const path = require('path');
 const { exec } = require('child_process');
+const clear = require('./clear');
+const constants = require('../src/constants');
 
-const tomsPath = `\\\\omega\\natdfs\\Services\\Central_storage\\Testing_ABSB_Secure\\IND\\`;
-const tomsOutputPath = path.resolve(`${ process.env.USERPROFILE }`, 'Desktop', 'convert_to_wet4');
+const tomsPath = constants.tomsTestingDir;
+const tomsOutputPath = constants.conversionInputDir;
 const selectedToms = process.argv.slice(2).map((tomNum) => `TOM${ tomNum }`);
 
 (async function() {
+	await clear();
 	const copyTasks = [];
 
 	for (const tom of selectedToms) {

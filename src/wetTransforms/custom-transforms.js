@@ -68,6 +68,19 @@ const tomTransforms = {
 			});
 		}
 
+		if (/ec_(?:442|478|541|2130|2173|2200|2201|2266|2268|2285)/.test(filename)) {
+			const links = $('a[href*=Step]');
+			const steps = $('[id*=Step]');
+
+			links.each((i, link) => $(link).attr('href', $(link).attr('href').toLowerCase()));
+
+			steps.each((i, step) => $(step).attr('id', $(step).attr('id').toLowerCase()));
+		}
+
+		if (/ec_(?:427|442|478|541|2130|2161|2173|2200|2201|2208|2266|2268|2285)/.test(filename)) {
+			$('li').filter(':not([class*=margin])').addClass('mrgn-tp-md');
+		}
+
 		transformSteps($);
 	},
 	TOM4082: ($, filename) => {

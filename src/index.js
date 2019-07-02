@@ -3,11 +3,12 @@ import walkFiles from 'walk-asyncgen';
 import commander from 'commander-fixed';
 import { resolve, basename } from 'path';
 import convertFile from './convert-file';
+import constants from './constants';
 
 
 // Set default input and output directories to use if no cli arguments are passed
-const defaultDir = process.env.USERPROFILE + '\\desktop\\convert_to_wet4\\';
-const defaultOutputDir = process.env.USERPROFILE + '\\desktop\\converted_to_wet4\\';
+const defaultDir = constants.conversionInputDir;
+const defaultOutputDir = constants.conversionOutputDir;
 
 // Set up cli and start main with callback
 commander
@@ -25,12 +26,10 @@ commander
 			exclude: commanderRef.exclude,
 			gdrive: commanderRef.gdrive || false,
 		};
-		// console.log(`inputDir: ${inputDir}\noutputDir: ${commanderRef.outputDir}`);
-		// console.log(`flags: ${JSON.stringify(flags, null, 2)}`);
-		const gdrivePath =
-			'\\\\omega\\natdfs\\cra\\hq\\absb\\absb_h0e\\gv1\\ird2\\ctsd\\dss\\tom_online\\wet4_conversion\\To be verified\\';
 
-		await main(inputDir, commanderRef.outputDir || commanderRef.gdrive ? gdrivePath : undefined, flags);
+		const gdrivePath = constants.toBeVerifiedDir;
+
+		await main(inputDir, commanderRef.outputDir || (commanderRef.gdrive ? gdrivePath : undefined), flags);
 	})
 	.parse(process.argv);
 
