@@ -42,9 +42,14 @@ export default ($) => {
 
 			$(`a[href=#${fnId}]`).each((i, footnote) => {
 				const $footnote = $(footnote);
+
+				const sourceElem = $footnote.parent().find('[id*=_source]');
+				const sourceId = sourceElem.attr('id');
+				sourceElem.removeAttr('id');
+
 				$footnote.attr('class', 'fn-lnk');
 				$footnote.html($footnote.html().replace(/(Footnote |Note de bas de page )(\d)/, '<span class="wb-inv">$1</span>$2'));
-				$footnote.wrap('<sup/>');
+				$footnote.wrap(`<sup id="${sourceId}"/>`);
 			});
 		});
 	});

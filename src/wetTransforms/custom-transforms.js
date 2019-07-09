@@ -21,12 +21,12 @@ const tomTransforms = {
 		transformSteps($);
 		$('#undefined').removeAttr('id');
 	},
+	TOM1921: ($) => $('table.indent-large, table.indent-xlarge').removeClass('indent-large indent-xlarge'),
 	TOM1940: ($, filename) => {
 		if (filename.includes('exhibita')) {
 			$('.indent-large').removeClass('indent-large');
 		}
 	},
-	TOM1921: ($) => $('table.indent-large, table.indent-xlarge').removeClass('indent-large indent-xlarge'),
 	TOM4031,
 	TOM4033: ($) => transformFootnotes($),
 	TOM404650: ($, filename) => {
@@ -163,6 +163,49 @@ export const doTOMTransforms =
 		: null;
 
 const postTransforms = {
+	TOM1970: ($, filename) => {
+		if (filename.includes('1976_fedtax')) {
+			const figures = [
+				//{ section: '1976\\.12', figureNums: ['1'] },
+				//{ section: '1976\\.14', figureNums: ['2', '3'] },
+				//{ section: '1976\\.33', figureNums: ['1'] },
+				//{ section: '1976\\.38', figureNums: ['1', '2'] },
+				{ section: '1976\\.51', figureNums: ['1', '2', '3', '4', '5'] },
+				{ section: '1976\\.53', figureNums: ['1', '2'] },
+				{ section: '1976\\.54', figureNums: ['1'] },
+				{ section: '1976\\.55', figureNums: ['1'] },
+				{ section: '1976\\.56', figureNums: ['2'] },
+				{ section: '1976\\.\\(13\\)', figureNums: ['2'] },
+			];
+
+			const $figs = $('p')
+				.filter((i, p) => /^Figure( |&nbsp;)\d(?:-|&ndash;)[\d.()]+$/i.test($(p).text().trim())) // find titles
+				.filter((i, figTitle) => { // filter out the ones we don't need
+					if (figures) {
+						for (const { section, figureNums } of figures) {
+							for (const figNum of figureNums) {
+								const re = new RegExp(`^Figure(?: |&nbsp;)${figNum}(?:-|&ndash;)${section}$`);
+								if (re.test($(figTitle).text().trim()))
+									return true;
+							}
+						}
+					}
+				})
+				.map((i, el) => $(el).next().get(0));
+
+			$figs.each((i, fig) => {
+				const $fig = $(fig);
+				$fig.children('[class*=col-md-]').each((i, row) => {
+					const $row = $(row);
+					$row.removeClass('wb-eqht');
+					$row.attr('class', $row.attr('class').replace(/col-md-\d{1,2}/, 'row'));
+				});
+			});
+
+		}
+
+		//el.attribs.class = el.attribs.class.replace(/(^| )span-\d/, '$1row');
+	},
 	TOM4033: ($, filename) => {
 		if (filename.includes('exh4033-f-')) {
 			const $table = $('table');

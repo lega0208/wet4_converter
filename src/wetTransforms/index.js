@@ -3,11 +3,11 @@ import transformClasses from './transformClasses';
 import convertDivTables from './div-tables';
 import { doTOMTransforms, doPostTransforms } from './custom-transforms';
 
-export default function applyWetTransforms(html, filename, isHomepage, manualId) {
+export default function applyWetTransforms(html, filename, isHomepage, manualId, transformingBody = false) {
 	const $ = cheerio.load(html, { decodeEntities: false });
 
 	// do transforms specific to whole TOMs or specific pages
-	doTOMTransforms(manualId, $, filename);
+	if (transformingBody) doTOMTransforms(manualId, $, filename);
 
 	// fix what's new label
 	if (isHomepage) {
@@ -53,11 +53,11 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 			grandparent.replaceWith(parent);
 		}
 
-		const tabsPanel = tabTitlesRef.siblings('div.tabs-panel').first();
+		const tabsPanel = tabTitlesRef.siblings('div.tabs-panel, div.tabs-ie6-fix').first();
 
 		tabTitlesRef.remove();
 
-		tabsPanel.removeClass('tabs-panel');
+		tabsPanel.removeClass('tabs-panel tabs-ie6-fix');
 		tabsPanel.addClass('tabpanels');
 
 		tabsPanel.children().each((i, panel) => {
@@ -313,7 +313,7 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId)
 		.addClass('mrgn-tp-md');
 
 	removeMultipleMargins($$);
-	doPostTransforms(manualId, $$, filename);
+	if (transformingBody) doPostTransforms(manualId, $$, filename);
 
 	return $$.html();
 }

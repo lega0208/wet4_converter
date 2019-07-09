@@ -13,16 +13,10 @@ export default async function convertFile(filePath, inputDir, flags = {}) {
 	const docData = extractData(data, filePath);
 	const { isHomepage, manualId } = docData.metadata;
 
-	//const dataLogOutputPath = `${process.env.USERPROFILE}\\Desktop\\conversion_data\\${basename(filePath)}.json`;
-	//await fs.outputJSON(dataLogOutputPath, docData, {
-	//	spaces: '\t',
-	//	EOL: '\r\n'
-	//});
-
-
 	// transform html into wet4
 	docData.toc = docData.toc ? await applyWetTransforms(docData.toc, basename(filePath), isHomepage, manualId) : '';
-	docData.content = formatHtml(await applyWetTransforms(docData.content, basename(filePath), isHomepage, manualId));
+	docData.content =
+		formatHtml(await applyWetTransforms(docData.content, basename(filePath), isHomepage, manualId, true));
 
 	// set resource (wet40 folder) path based on if infozone flag was passed
 	const localPath = relative(dirname(filePath), (await findWet4(inputDir))).replace(/\\/g, '/');

@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const constants = require('../src/constants');
 
@@ -23,9 +23,8 @@ const selectedToms = process.argv.slice(2).map((tomNum) => `TOM${ tomNum }`);
 
 			for (const outputPath of outputPaths) {
 				await fs.copy(srcPath, outputPath);
-				console.log(`Output to ${outputPath}`);
+				console.log(`Copied:\n${srcPath}\nto:\n${outputPath}`);
 			}
-
 		} catch (e) {
 			console.error('Uh oh, an error occurred:');
 			console.error(e);
