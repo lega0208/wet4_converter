@@ -260,9 +260,10 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId,
 	// clean up imgs - remove width/height attribs, unwrap from <p>s
 	$('img').each((i, img) => {
 		const imgRef = $(img);
+		const imgParent = imgRef.parent();
 		imgRef.removeAttr('width').removeAttr('height');
-		if (imgRef.parent().get(0) && imgRef.parent().get(0).tagName === 'p' && imgRef.parent().text().trim() === '') {
-			imgRef.parent().replaceWith(imgRef);
+		if (imgParent.get(0) && imgParent.get(0).tagName === 'p' && imgParent.text().trim() === '') {
+			imgRef.parent().replaceWith(imgParent.contents());
 		}
 		if (imgRef.parents().length > 0) {
 			const parentRef = imgRef.parent();

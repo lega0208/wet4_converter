@@ -112,6 +112,9 @@ const tomTransforms = {
 			$mod.after('<div class="clearfix"/>');
 		}
 	},
+	TOM40922: ($, filename) => {
+		if (filename.includes('coordinator_4092_22')) transformSteps($);
+	},
 	TOM409231: ($, filename) => {
 		if (filename.includes('homepage')) {
 			const $mod = $('.module-tool');
@@ -235,6 +238,19 @@ const postTransforms = {
 			const div = $('div.bg-info');
 			div.parent().addClass('bg-info');
 			div.each((i, div) => $(div).replaceWith($(div).html()));
+		}
+	},
+	TOM40922: ($, filename) => {
+		if (/error_clues_\d+/.test(filename)) {
+			const $td = $('td');
+			$td.find('p[class*=mrgn-tp-]').removeClass('mrgn-tp-md').removeClass('mrgn-tp-lg');
+			const ecNums = $td.has('p').filter((i, p) => /^\d+$/.test($(p).text().trim()));
+			ecNums.addClass('text-center');
+
+			const $firstTable = $('table').first();
+			const otherTables = $firstTable.nextAll('table');
+			otherTables.each((i, table) => $(table).contents().appendTo($firstTable));
+			otherTables.remove();
 		}
 	},
 	TOM404650: ($, filename) => {

@@ -72,11 +72,6 @@ export default function convertDivTables($, filename) {
 			$table.append('<tr/>');
 			const row = $table.children().last();
 
-			if (filename.includes('9914_14_')) {
-				console.log('Before iterating children:');
-				console.log(`table innerHtml:\n${$table.html()}`);
-			}
-
 			$w.children().each((i, cell) => {
 				const $c = $(cell);
 
@@ -95,12 +90,6 @@ export default function convertDivTables($, filename) {
 				} else if (!!$c.html().trim()) {
 					row.append(`<td>${$c.html()}</td>`);
 				}
-
-				if (filename.includes('9914_14_')) {
-					console.log(`child innerHtml:\n${$c.html()}`);
-					console.log(`table innerHtml:\n${$table.html()}`);
-				}
-
 			});
 
 			const nextSibling = $w.next();
