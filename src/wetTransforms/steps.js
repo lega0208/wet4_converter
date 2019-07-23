@@ -3,7 +3,7 @@ export default ($) => {
 	const $steps =
 		$('.span-6')
 			.filter(':not(.module-note, .footnote-container)')
-			.filter((i, el) => /(?:Step|(?:&Eacute;|É)tape|Note)(?:\s+#)?\s+\d/i.test($(el).text()));
+			.filter((i, el) => /(?:Step|(?:&Eacute;|É)tape|Note)(?:\s+#|&nbsp;#)?(?:\s+|&nbsp;)\d/i.test($(el).text()));
 
 	$steps.each((i, el) => {
 		const $el = $(el);
@@ -14,7 +14,7 @@ export default ($) => {
 		if (idElems.length > 1) {
 			console.log('wowo, multiple ids in a single "Step"!!');
 			idElems.each((i, idEl) => console.log(idEl.attribs.id));
-		} else if (!$el.attr('id') && idElems.length === 0 && !/(?:Step|(?:&Eacute;|É)tape|Note)(?:\s+#)?\s+1/i.test($(el).text())) {
+		} else if (!$el.attr('id') && idElems.length === 0 && !/(?:Step|(?:&Eacute;|É)tape|Note)(?:\s+#|&nbsp;#)?(?:\s+|&nbsp;)1/i.test($(el).text())) {
 			console.log('no id????');
 		}
 		const id = $el.attr('id') || idElems.first().attr('id');

@@ -119,7 +119,7 @@ export default function extractData(fileContents, filePath) {
 	const breadcrumbs =
 		($bc.html() || '')
 			.trim()
-			.replace(/ ?&#62;/g, '')
+			.replace(/ ?&#62;| ?&gt;/g, '')
 			.split('\r\n')
 			.slice(1)
 			.map((li) => `\t\t\t\t\t${li.trim()}`)

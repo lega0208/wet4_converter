@@ -209,6 +209,21 @@ const postTransforms = {
 
 		//el.attribs.class = el.attribs.class.replace(/(^| )span-\d/, '$1row');
 	},
+	TOM3990: ($, filename) => {
+		$('div.alert.alert-info.mrgn-tp-0')
+			.removeClass('mrgn-tp-0')
+			.addClass('mrgn-tp-md');
+
+		if (filename.includes('foa_mft_t1_acc_3992.8')) {
+			$('li.mrgn-tp-0, li.mrgn-bttm-0')
+				.removeClass('mrgn-tp-0')
+				.removeClass('mrgn-bttm-0')
+				.addClass('mrgn-tp-md');
+
+			$('pre.mainframe')
+				.each((i, mainframe) => $(mainframe).prev('br').remove());
+		}
+	},
 	TOM4033: ($, filename) => {
 		if (filename.includes('exh4033-f-')) {
 			const $table = $('table');
@@ -266,6 +281,9 @@ const postTransforms = {
 			table.find('.bg-primary').removeClass('bg-primary');
 			table.find('th').each((i, th) => th.tagName = 'td');
 		}
+	},
+	TOM9890: ($) => {
+		$('li').not('[class*=mrgn-tp-]').addClass('mrgn-tp-md')
 	},
 };
 
