@@ -268,6 +268,18 @@ const postTransforms = {
 			otherTables.remove();
 		}
 	},
+	TOM4095: ($, filename) => {
+		if (filename.includes('4095.6_1_311')) {
+			const $figures = $('.background-light');
+			$figures.removeClass('background-light');
+			$figures.addClass('panel panel-body panel-default');
+			$('div.brdr-tp').has('a[href*=PDF]').after('<div class="clearfix"/>');
+		} else if (filename.includes('4095.6_3_309')) {
+			const $figures = $('.background-light');
+			$figures.removeClass('background-light');
+			$figures.addClass('panel panel-body panel-default');
+		}
+	},
 	TOM404650: ($, filename) => {
 		if (filename.includes('sec217_4046.(50)7')) {
 			const table = $('table').first();
@@ -282,9 +294,19 @@ const postTransforms = {
 			table.find('th').each((i, th) => th.tagName = 'td');
 		}
 	},
-	TOM9890: ($) => {
-		$('li').not('[class*=mrgn-tp-]').addClass('mrgn-tp-md')
+	TOM9850: ($, filename) => {
+		if (filename.includes('tpc_3_1') || filename.includes('tpc_3_3')) {
+			const $imgs = $('img');
+			$imgs.addClass('col-md-12');
+			$imgs.each((i, img) => {
+				const $img = $(img);
+				if ($img.next('div.clearfix').length === 0) {
+					$img.after('<div class="clearfix"/>');
+				}
+			});
+		}
 	},
+	TOM9890: ($) => $('li').not('[class*=mrgn-tp-]').addClass('mrgn-tp-md'),
 };
 
 export const doPostTransforms =

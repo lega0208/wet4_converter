@@ -87,7 +87,7 @@ export default function convertDivTables($, filename) {
 
 					if (!!$c.html().trim())
 						row.next().append(`<td>${$c.html()}</td>`);
-				} else if (!!$c.html().trim()) {
+				} else {
 					row.append(`<td>${$c.html()}</td>`);
 				}
 			});
