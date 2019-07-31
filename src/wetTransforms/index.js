@@ -208,9 +208,44 @@ export default function applyWetTransforms(html, filename, isHomepage, manualId,
 
 	// add list classes
 	// add 'lst-lwr-alph' and 'lst-lwr-rmn' to lvl 2 and 3 <ol>s, respectively
-	$('li > ol').filter((i, elem) => $(elem).parentsUntil(':not(li, ol, ul)').filter(':not(div)').length === 2) // test for any bugs coming from filtering out divs
+	$('li > ol').filter((i, elem) => {
+		const $elem = $(elem);
+		const closestBadParent = $elem.closest(':not(li, ol)');
+		const liParents = $elem.parentsUntil(closestBadParent);
+
+		//if (filename.includes('ec2304-e.html')) {
+		//	console.log(`\nclosestBadParent: ${closestBadParent.get(0).tagName}`);
+		//	//const lastParent = liParents.last().get(0);
+		//	const lastParent = liParents.get(liParents.length - 1);
+		//	console.log(`parentsUntil length: ${liParents.length}`);
+		//	console.log(`last parent tag: ${lastParent.tagName}`);
+		//	console.log(`last parent parent tag: ${$(lastParent).parent().get(0).tagName}`);
+		//	const parentsVal = liParents.last().get(0).tagName === 'li' ? liParents.length - 1 : liParents.length;
+		//	console.log(`parentsVal: ${parentsVal}`);
+		//
+		//	console.log('parent tags:');
+		//	liParents.each((i, parent) => console.log(parent.tagName));
+		//}
+
+		return (
+			liParents.last().get(0).tagName === 'li'
+				? liParents.length - 1
+				: liParents.length
+		) === 2;
+	})
 		.addClass('lst-lwr-alph');
-	$('li li > ol').filter((i, elem) => $(elem).parentsUntil(':not(li, ol, ul)').filter(':not(div)').length === 4)
+
+	$('li li > ol').filter((i, elem) => {
+		const $elem = $(elem);
+		const closestBadParent = $elem.closest(':not(li, ol)');
+		const liParents = $elem.parentsUntil(closestBadParent);
+
+		return (
+			liParents.last().get(0).tagName === 'li'
+				? liParents.length - 1
+				: liParents.length
+		) === 4;
+	})
 		.addClass('lst-lwr-rmn');
 
 	$('.row.start').each((i, elem) => (elem.attribs.class = elem.attribs.class.replace('row start', 'row-start')));

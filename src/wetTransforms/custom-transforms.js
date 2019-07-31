@@ -122,6 +122,7 @@ const tomTransforms = {
 			$mod.after('<div class="clearfix"/>');
 		}
 		transformSteps($);
+		$('li').filter(':not([class*=margin])').addClass('mrgn-tp-md');
 	},
 	TOM409232: ($, filename) => {
 		if (filename.includes('homepage')) {
