@@ -202,8 +202,9 @@ export const buildAttachment = (attachment) => {
 
 	return attachment.text && attachment.uri
 		? `
-<a href="${attachment.uri}" class="btn btn-default pull-right">
+<a href="${attachment.uri}" class="btn btn-default mrgn-bttm-md pull-right">
 \t<span class="fa fa-download"></span> ${attachment.text}
 </a>
+<div class="clearfix"></div>
 ` : '';
 };

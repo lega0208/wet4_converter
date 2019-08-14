@@ -3,7 +3,7 @@ export default ($) => {
 	const $steps =
 		$('.span-6')
 			.filter(':not(.module-note, .footnote-container)')
-			.filter((i, el) => /(?:Step|(?:&Eacute;|É)tape|Note)(?:\s+#|&nbsp;#)?(?:\s+|&nbsp;)\d/i.test($(el).text()));
+			.filter((i, el) => /(?:Step|(?:&Eacute;|É)tape|Note|Remarque)(?:\s+#|&nbsp;#)?(?:\s+|&nbsp;)\d/i.test($(el).text()));
 
 	$steps.each((i, el) => {
 		const $el = $(el);

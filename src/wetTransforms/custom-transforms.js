@@ -101,8 +101,42 @@ const tomTransforms = {
 				$el.html(`<div class="bg-info">${$el.html()}</div>`);
 			});
 		}
+		if (filename.includes('exhibitA_4092NR')) {
+			$('table').addClass('text-center');
+		}
+		if (!filename.includes('homepage')) {
+			$('li').filter(':not([class*=margin])').addClass('mrgn-tp-md');
+			$('p:has(div, ul)').each((i, p) => {
+				const $p = $(p);
+				$p.children('div, ul').insertAfter($p);
+				$p.html($p.html().trim());
+				$p.removeClass('margin-bottom-none');
+				if (!$p.attr('class')) $p.removeAttr('class');
+			});
+			$('p.margin-bottom-none, p.indent-small').each((i, p) => {
+				const $p = $(p);
+				if ($p.next('div.module-note, div.module-attention, ul').length > 0) {
+					$p.removeClass('margin-bottom-none');
+				}
+				if ($p.hasClass('indent-small')) {
+					$p.removeClass('indent-small');
+				}
+				if (!$p.attr('class')) $p.removeAttr('class');
+			});
+			$('li.indent-xlarge').each((i, li) => {
+				const $li = $(li);
+				$li.removeClass('indent-xlarge');
+				if (!$li.attr('class')) $li.removeAttr('class');
+			});
+			$('br').filter((i, br) => {
+				const $br = $(br);
+				if ($br.prev('div.module-note').length > 0) {
+					$br.remove();
+				}
+			});
 
-		transformSteps($);
+			transformSteps($);
+		}
 	},
 	TOM40921: ($, filename) => {
 		if (filename.includes('exhibit_a')) {
@@ -116,13 +150,20 @@ const tomTransforms = {
 		if (filename.includes('coordinator_4092_22')) transformSteps($);
 	},
 	TOM409231: ($, filename) => {
-		if (filename.includes('homepage')) {
+		if (filename.includes('home')) {
 			const $mod = $('.module-tool');
 			$mod.addClass('col-md-8');
 			$mod.after('<div class="clearfix"/>');
+		} else {
+			$('li').filter(':not([class*=margin])').addClass('mrgn-tp-md');
+			$('p.margin-bottom-none').each((i, p) => {
+				const $p = $(p);
+				if ($p.next('div.module-note').length > 0) {
+					$p.removeClass('margin-bottom-none');
+				}
+			});
 		}
 		transformSteps($);
-		$('li').filter(':not([class*=margin])').addClass('mrgn-tp-md');
 	},
 	TOM409232: ($, filename) => {
 		if (filename.includes('homepage')) {
@@ -131,6 +172,11 @@ const tomTransforms = {
 			$mod.after('<div class="clearfix"/>');
 		}
 		transformSteps($);
+	},
+	TOM4200: ($, filename) => {
+		if (filename.includes('exhibit_d_42(10)')) {
+			transformSteps($);
+		}
 	},
 	TOM9816: ($, filename) => {
 		if (filename.includes('asls_98(16)')) {
@@ -252,9 +298,14 @@ const postTransforms = {
 	TOM4092: ($, filename) => {
 		if (filename.includes('exhibitB_4092NR')) {
 			const div = $('div.bg-info');
-			div.parent().addClass('bg-info');
+			div.parent().addClass('active');
 			div.each((i, div) => $(div).replaceWith($(div).html()));
 		}
+		$('div.alert table').each((i, table) => {
+			const $table = $(table);
+			$table.addClass('mrgn-bttm-md mrgn-tp-md');
+			$table.find('tr:not(:has(th))').addClass('panel');
+		});
 	},
 	TOM40922: ($, filename) => {
 		if (/error_clues_\d+/.test(filename)) {

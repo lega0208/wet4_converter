@@ -13,7 +13,7 @@ export default function convertDivTables($, filename) {
 	wrappers.each((i, wrapper) => {
 		const $w = $(wrapper);
 		const spanNums = [];
-		const wrapperSpan = getSpanNum($w); // debug dis shit
+		const wrapperSpan = getSpanNum($w);
 		let currentChild = $w.children(borderSpansSelector).first();
 
 		$w.find('.cn-invisible, .invisible').remove();
@@ -50,15 +50,19 @@ export default function convertDivTables($, filename) {
 			$w.children().each((i, cell) => {
 				const $c = $(cell);
 				const spanNum = getSpanNum($c);
+				const isClear = $c.hasClass('clear');
 
-				if (addNums([...rowSpans, spanNum]) > wrapperSpan || rowSpans.length === 0) {
+				if (isClear || addNums([...rowSpans, spanNum]) > wrapperSpan || rowSpans.length === 0) {
 					newTable.append('<tr/>');
 					rowSpans = [];
 				}
 
-				newTable.children().last().append(`<td>${$c.html()}</td>`);
+				if (!isClear) {
+					newTable.children().last().append(`<td>${$c.html()}</td>`);
+					rowSpans.push(spanNum);
+				}
+
 				$c.remove();
-				rowSpans.push(spanNum);
 			});
 
 			$w.remove();
