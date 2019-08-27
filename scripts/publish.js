@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const path = require('path');
+const { resolve } = require('path');
 const constants = require('../src/constants');
 
 const selectedToms = process.argv.slice(2).map((tomNum) => `TOM${ tomNum }`);
@@ -14,11 +14,11 @@ const selectedToms = process.argv.slice(2).map((tomNum) => `TOM${ tomNum }`);
 
 	for (const tom of selectedToms) {
 		try {
-			const srcPath = path.resolve(conversionOutputDir, tom);
+			const srcPath = resolve(conversionOutputDir, tom);
 			const outputPaths = [
-				path.resolve(toBeVerifiedDir, tom),
-				path.resolve(tomsTestingDir, tom),
-				path.resolve(tomsSecureDir, tom),
+				resolve(toBeVerifiedDir, tom),
+				resolve(tomsTestingDir, tom),
+				resolve(tomsSecureDir, tom),
 			];
 
 			for (const outputPath of outputPaths) {

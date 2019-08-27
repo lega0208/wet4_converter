@@ -173,6 +173,18 @@ const tomTransforms = {
 		}
 		transformSteps($);
 	},
+	TOM401056: ($, filename) => {
+		if (filename.includes('40(10)5.97_sbvctc') || filename.includes('40(10)5.9(14)_2_312')) {
+			transformSteps($);
+		}
+		if (filename.includes('40(10)5.9(10)_witb')) {
+			const figures = $('.background-light');
+
+			figures.removeClass('background-light');
+			figures.removeClass('margin-bottom-none');
+			figures.addClass('well well-sm mrgn-bttm-md');
+		}
+	},
 	TOM4200: ($, filename) => {
 		if (filename.includes('exhibit_d_42(10)')) {
 			transformSteps($);

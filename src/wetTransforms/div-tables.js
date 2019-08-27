@@ -32,6 +32,11 @@ export default function convertDivTables($, filename) {
 			// parse table and replace wrapper with table
 			$w.before('<table class="table table-bordered"/>');
 			const newTable = $w.prev();
+
+			if ($w.hasClass('align-center')) {
+				newTable.addClass('text-center');
+			}
+
 			const headers = $w.find('.background-accent, .background-light');
 
 			if (headers.length > 0) {
@@ -75,6 +80,10 @@ export default function convertDivTables($, filename) {
 
 			$table.append('<tr/>');
 			const row = $table.children().last();
+
+			if ($w.hasClass('align-center')) {
+				row.addClass('text-center');
+			}
 
 			$w.children().each((i, cell) => {
 				const $c = $(cell);
